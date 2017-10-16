@@ -7,20 +7,69 @@
     android:orientation="vertical"
     tools:context="com.example.raymon.datapuzzle.MainActivity"
     >
-    <Button
-        android:id="@+id/createfile"
-        android:layout_width="match_parent"
+    <!--<Button-->
+    <!--android:id="@+id/createfile"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="Create a file on Google Drive"-->
+    <!--android:onClick="onClickCreateFile"/>-->
+
+    <!--<Button-->
+    <!--android:id="@+id/openfile"-->
+    <!--android:layout_below="@+id/createfile"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="Open file from Google Drive"-->
+    <!--android:onClick="onClickOpenFile"/>-->
+
+    <LinearLayout
         android:layout_height="wrap_content"
-        android:text="Create a file on Google Drive"
-        android:onClick="onClickCreateFile"/>
-
-    <Button
-        android:id="@+id/openfile"
-        android:layout_below="@+id/createfile"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Open file from Google Drive"
-        android:onClick="onClickOpenFile"/>
+        android:orientation="vertical"
+        android:layout_marginTop="120dp"
+        android:layout_alignParentTop="true">
+        <!-- username tag-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Username:"
+            android:textSize="20sp" />
+        <!-- username edit area-->
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editTextLogin"
+            android:layout_gravity="center_horizontal" />
+        <!-- password tag-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="Password:" />
 
+        <!-- password edit area-->
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editTextPassword"
+            android:inputType="textPassword"
+            android:layout_gravity="center_horizontal" />
 
+        <!-- button to login-->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:layout_gravity="right"
+            android:id="@+id/submit" />
+
+        <!-- button to register-->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Register"
+            android:layout_gravity="right"
+            android:id="@+id/register" />
+    </LinearLayout>
+    >
 </LinearLayout>

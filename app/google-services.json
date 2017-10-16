@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "350650850099",
+    "firebase_url": "https://protean-mind-182923.firebaseio.com",
+    "project_id": "protean-mind-182923",
+    "storage_bucket": "protean-mind-182923.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:350650850099:android:4da0f90e2a46e940",
+        "android_client_info": {
+          "package_name": "com.example.raymon.datapuzzle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "350650850099-eamqt8rttktosfnv545a89pc1p28nkfm.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "350650850099-v83ipht5qaar0mpm4juqauinlgqpi2rh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.raymon.datapuzzle",
+            "certificate_hash": "8798f1d9c12046fc73011c5e4f0c257afb35dcb1"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFcRSflvW6c602R5UMTxtIsj6xRuUyr7c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "350650850099-eamqt8rttktosfnv545a89pc1p28nkfm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

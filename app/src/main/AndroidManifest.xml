@@ -3,6 +3,7 @@
     package="com.example.raymon.datapuzzle">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -12,7 +13,8 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.gm.version"
-            android:value="@integer/google_play_services_version"  />
+            android:value="@integer/google_play_services_version" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,6 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".GooDriveConnection"></activity>
     </application>
 
 </manifest>
