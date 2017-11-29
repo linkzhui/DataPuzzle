@@ -8,14 +8,8 @@ import java.io.OutputStream;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.IntentSender.SendIntentException;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
-import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -26,19 +20,19 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
-import com.google.android.gms.drive.DriveApi.DriveContentsResult;
 import com.google.android.gms.drive.MetadataChangeSet;
 
-public class GooDriveConnection extends Activity implements ConnectionCallbacks,
+public class GoogleDriveFileUpload extends Activity implements ConnectionCallbacks,
         OnConnectionFailedListener {
 
     private static final String TAG = "drive-quickstart";
-    private static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
+    private static final int REQUEST_CODE_File_UPLOAD = 1;
     private static final int REQUEST_CODE_CREATOR = 2;
     private static final int REQUEST_CODE_RESOLUTION = 3;
 
     private GoogleApiClient mGoogleApiClient;
-    private Bitmap mBitmapToSave;
+    private Bitmap mBitmapToSave = ExternalStorage.uploadImageFile;
+
 
     /**
      * Create a new file and save it to Drive.
@@ -46,7 +40,7 @@ public class GooDriveConnection extends Activity implements ConnectionCallbacks,
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
-        Log.e("life cycle test", "we are on google drive connection cycle");
+        Log.e("life cycle test","we are on google drive connection cycle");
         super.onCreate(savedInstanceState);
         if (mGoogleApiClient == null) {
             //authorization for the Google Drive Android API is handled by the GoogleApiClient
@@ -66,7 +60,7 @@ public class GooDriveConnection extends Activity implements ConnectionCallbacks,
     }
     private void saveFileToDrive() {
         // Start by creating a new contents, and setting a callback.
-        Log.e(TAG, "Creating new contents.");
+        Log.e(TAG, "Save file to Drive.");
         final Bitmap image = mBitmapToSave;
         Drive.DriveApi.newDriveContents(mGoogleApiClient)
                 .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
@@ -115,6 +109,7 @@ public class GooDriveConnection extends Activity implements ConnectionCallbacks,
     @Override
     protected void onStart(){
         super.onStart();
+        Log.e(TAG,"google drive connection begin");
         mGoogleApiClient.connect();
     }
     @Override
@@ -133,15 +128,20 @@ public class GooDriveConnection extends Activity implements ConnectionCallbacks,
         super.onPause();
     }
 
+
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+
+        Log.e(TAG,"onActivityResult");
         switch (requestCode) {
-            case REQUEST_CODE_CAPTURE_IMAGE:
-                Log.e(TAG, "the result code is get the file from document");
+            case REQUEST_CODE_File_UPLOAD:
                 // Called after a photo has been taken.
+
+                mBitmapToSave = ExternalStorage.uploadImageFile;
+
                 if (resultCode == Activity.RESULT_OK) {
                     // Store the image data as a bitmap for writing later.
-                    mBitmapToSave = (Bitmap) data.getExtras().get("data");
+
                 }
                 break;
             case REQUEST_CODE_CREATOR:
@@ -150,23 +150,14 @@ public class GooDriveConnection extends Activity implements ConnectionCallbacks,
                     Log.i(TAG, "Image successfully saved.");
                     mBitmapToSave = null;
                     // Just start the camera again for another photo.
-                    startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE),
-                            REQUEST_CODE_CAPTURE_IMAGE);
+                    startActivityForResult(new Intent(this, ExternalStorage.class),REQUEST_CODE_File_UPLOAD
+                            );
                 }
                 break;
         }
     }
 
 
-    //get the bitmap information from the Uri
-    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
-        ParcelFileDescriptor parcelFileDescriptor =
-                getContentResolver().openFileDescriptor(uri, "r");
-        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-        parcelFileDescriptor.close();
-        return image;
-    }
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
@@ -191,14 +182,13 @@ public class GooDriveConnection extends Activity implements ConnectionCallbacks,
     @Override
     public void onConnected(Bundle connectionHint) {
         Log.i(TAG, "API client connected.");
-        if (mBitmapToSave == null) {
-            // This activity has no UI of its own. Just start the camera.
-            startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE),
-                    REQUEST_CODE_CAPTURE_IMAGE);
+        if(mBitmapToSave == null)
+        {
+            startActivityForResult(new Intent(this, ExternalStorage.class),REQUEST_CODE_File_UPLOAD);
             return;
-
         }
         saveFileToDrive();
+
     }
 
     @Override

@@ -78,7 +78,13 @@ public class MainActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.hasChild(username) && (password.equals(dataSnapshot.child(username).child("password").getValue()))) {
                             Log.i(" Your log", "You successfully login");
-                            Intent myIntent = new Intent(MainActivity.this, GooDriveConnection.class);
+
+
+                            //use intent to switch to next activity: google drive connection activity
+
+
+                            //Intent myIntent = new Intent(MainActivity.this, GooDriveConnection.class);
+                            Intent myIntent = new Intent(MainActivity.this, GoogleDriveFileUpload.class);
                             myIntent.putExtra("Username", username);
                             startActivity(myIntent);
 
