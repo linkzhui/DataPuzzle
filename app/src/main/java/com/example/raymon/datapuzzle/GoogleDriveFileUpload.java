@@ -30,7 +30,7 @@ public class GoogleDriveFileUpload extends Activity implements ConnectionCallbac
     private static final int REQUEST_CODE_CREATOR = 2;
     private static final int REQUEST_CODE_RESOLUTION = 3;
 
-    private GoogleApiClient mGoogleApiClient;
+    protected static GoogleApiClient mGoogleApiClient;
     private Bitmap mBitmapToSave = ExternalStorage.uploadImageFile;
 
 
@@ -90,6 +90,7 @@ public class GoogleDriveFileUpload extends Activity implements ConnectionCallbac
                         // Note that the user will be able to change the title later.
                         MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
                                 .setMimeType("image/jpeg").setTitle("Android Photo.png").build();
+
                         // Create an intent for the file chooser, and start it.
                         IntentSender intentSender = Drive.DriveApi
                                 .newCreateFileActivityBuilder()
@@ -195,4 +196,10 @@ public class GoogleDriveFileUpload extends Activity implements ConnectionCallbac
     public void onConnectionSuspended(int cause) {
         Log.i(TAG, "GoogleApiClient connection suspended");
     }
+
+
 }
+
+
+
+

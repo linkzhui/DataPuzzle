@@ -25,7 +25,10 @@
         </activity>
         <activity android:name=".GooDriveConnection" />
         <activity android:name=".ExternalStorage" />
-        <activity android:name=".GoogleDriveFileUpload"></activity>
+        <activity android:name=".GoogleDriveFileUpload" />
+        <activity android:name=".CreateFolderActivity" />
+        <activity android:name=".BaseActivity" />
+        <activity android:name=".QueryFileActivity"></activity>
     </application>
 
 </manifest>
