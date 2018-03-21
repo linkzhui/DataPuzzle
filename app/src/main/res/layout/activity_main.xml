@@ -70,6 +70,14 @@
             android:text="Register"
             android:layout_gravity="right"
             android:id="@+id/register" />
+
+        <!-- button to open wifi p2p-->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Wifi p2p"
+            android:layout_gravity="right"
+            android:id="@+id/Wifi_p2p" />
     </LinearLayout>
     >
 </LinearLayout>

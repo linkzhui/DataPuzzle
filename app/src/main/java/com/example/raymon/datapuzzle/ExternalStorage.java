@@ -83,7 +83,8 @@ public class ExternalStorage extends AppCompatActivity {
         // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
         // To search for all documents available via installed storage providers,
         // it would be "*/*".
-        intent.setType("image/*");
+
+        intent.setType("*/*");
         startActivityForResult(intent, READ_REQUEST_CODE);
 
     }

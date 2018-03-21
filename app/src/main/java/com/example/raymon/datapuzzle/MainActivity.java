@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText mPasswordEditText;
     private Button mSubmitButton;
     private Button mRegisterButton;
+    private Button mWifiP2p;
     private DatabaseReference mDatabase;
 
     @Override
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         mPasswordEditText = findViewById(R.id.editTextPassword);
         mSubmitButton = findViewById(R.id.submit);
         mRegisterButton = findViewById(R.id.register);
+        mWifiP2p = findViewById(R.id.Wifi_p2p);
 
         mRegisterButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
                 mDatabase.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+
                         if (dataSnapshot.hasChild(username)) {
                             Toast.makeText(getBaseContext(), "username is already registered, please change one", Toast.LENGTH_SHORT).show();
                         } else if (!username.equals("") && !password.equals("")) {
@@ -84,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                             //Intent myIntent = new Intent(MainActivity.this, GooDriveConnection.class);
-                            Intent myIntent = new Intent(MainActivity.this, QueryFileActivity.class);
+                            Intent myIntent = new Intent(MainActivity.this, GoogleDriveFileUpload.class);
                             myIntent.putExtra("Username", username);
                             startActivity(myIntent);
 
@@ -98,6 +101,15 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+            }
+        });
+
+        mWifiP2p.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Intent myIntent = new Intent(MainActivity.this, GooDriveConnection.class);
+                Intent myIntent = new Intent(MainActivity.this, WifiTransferFileActivity.class);
+                startActivity(myIntent);
             }
         });
     }
