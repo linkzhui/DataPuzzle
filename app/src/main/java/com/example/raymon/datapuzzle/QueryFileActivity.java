@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.Metadata;
@@ -34,12 +35,39 @@ public class QueryFileActivity extends BaseActivity {
         mListView.setAdapter(mResultsAdapter);
     }
 
+
+    /**
+     * Retrieves results for the next page. For the first run,
+     * it retrieves results for the first page.
+     */
+
     @Override
     protected void onDriveClientReady() {
+        final Task<DriveFolder> appFolderTask = getDriveResourceClient().getAppFolder();
+        appFolderTask.addOnSuccessListener(this, new OnSuccessListener<DriveFolder>() {
+            @Override
+            public void onSuccess(DriveFolder driveFolder) {
+                DriveFolder parent = appFolderTask.getResult();
+                queryFile(parent);
+            }
+        })
+                .addOnFailureListener(this, new OnFailureListener(){
+
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "Error retrieving files", e);
+                        showMessage("found root folder fail");
+                        finish();
+                    }
+                });
+    }
+
+    private void queryFile(DriveFolder folder){
         Query query = new Query.Builder()
                 .build();
         // [START query_children]
-        Task<MetadataBuffer> queryTask = getDriveResourceClient().query(query);
+
+        Task<MetadataBuffer> queryTask = getDriveResourceClient().queryChildren(folder,query);
         // END query_children]
         queryTask
                 .addOnSuccessListener(this,
@@ -58,7 +86,6 @@ public class QueryFileActivity extends BaseActivity {
                         finish();
                     }
                 });
-
     }
 
     /**
@@ -71,32 +98,6 @@ public class QueryFileActivity extends BaseActivity {
         mResultsAdapter.clear();
     }
 
-    /**
-     * Retrieves results for the next page. For the first run,
-     * it retrieves results for the first page.
-     */
-    private void listFilesInFolder() {
-        Query query = new Query.Builder()
-                .addFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
-                .build();
-        // [START query_children]
-        Task<MetadataBuffer> queryTask = getDriveResourceClient().queryChildren(getDriveResourceClient().getRootFolder().getResult(), query);
-        // END query_children]
-        queryTask
-                .addOnSuccessListener(this,
-                        new OnSuccessListener<MetadataBuffer>() {
-                            @Override
-                            public void onSuccess(MetadataBuffer metadataBuffer) {
-                                mResultsAdapter.append(metadataBuffer);
-                            }
-                        })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "Error retrieving files", e);
-                        showMessage(getString(R.string.query_failed));
-                        finish();
-                    }
-                });
-    }
+
+
 }

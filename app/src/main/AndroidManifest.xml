@@ -32,13 +32,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".ExternalStorage" />
-        <activity android:name=".GoogleDriveFileUpload" />
-        <activity android:name=".CreateFolderActivity" />
         <activity android:name=".BaseActivity" />
         <activity android:name=".QueryFileActivity" />
         <activity android:name=".WifiTransferFileActivity" />
         <activity android:name=".UserActivity" />
-        <activity android:name=".Main2Activity" />
+        <activity android:name=".GoogleDriveFileUploadActivity" />
+        <activity android:name=".FileDownloadActivity"></activity>
     </application>
 
 </manifest>

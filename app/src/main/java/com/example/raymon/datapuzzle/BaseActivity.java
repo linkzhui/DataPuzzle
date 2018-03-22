@@ -24,7 +24,9 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 
+import java.io.BufferedOutputStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -206,4 +208,5 @@ public abstract class BaseActivity extends Activity {
     protected DriveResourceClient getDriveResourceClient() {
         return mDriveResourceClient;
     }
+
 }

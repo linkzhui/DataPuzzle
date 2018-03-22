@@ -27,7 +27,7 @@ public class UserActivity extends AppCompatActivity {
         mFileUploadButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent myIntent = new Intent(UserActivity.this, GoogleDriveFileUpload.class);
+                Intent myIntent = new Intent(UserActivity.this, GoogleDriveFileUploadActivity.class);
                 startActivity(myIntent);
             }
         });
