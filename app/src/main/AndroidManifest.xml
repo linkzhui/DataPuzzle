@@ -27,16 +27,18 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".GooDriveConnection" />
         <activity android:name=".ExternalStorage" />
         <activity android:name=".GoogleDriveFileUpload" />
         <activity android:name=".CreateFolderActivity" />
         <activity android:name=".BaseActivity" />
         <activity android:name=".QueryFileActivity" />
-        <activity android:name=".WifiTransferFileActivity"></activity>
+        <activity android:name=".WifiTransferFileActivity" />
+        <activity android:name=".UserActivity" />
+        <activity android:name=".Main2Activity" />
     </application>
 
 </manifest>

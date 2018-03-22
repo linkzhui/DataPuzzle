@@ -31,7 +31,7 @@ public class GoogleDriveFileUpload extends Activity implements ConnectionCallbac
     private static final int REQUEST_CODE_RESOLUTION = 3;
 
     protected static GoogleApiClient mGoogleApiClient;
-    private Bitmap mBitmapToSave = ExternalStorage.uploadImageFile;
+    private Bitmap mBitmapToSave = ExternalStorage.uploadFile;
 
 
     /**
@@ -136,13 +136,13 @@ public class GoogleDriveFileUpload extends Activity implements ConnectionCallbac
         Log.e(TAG,"onActivityResult");
         switch (requestCode) {
             case REQUEST_CODE_File_UPLOAD:
-                // Called after a photo has been taken.
+                // Called after a file has been selected.
 
-                mBitmapToSave = ExternalStorage.uploadImageFile;
+                mBitmapToSave = ExternalStorage.uploadFile;
 
                 if (resultCode == Activity.RESULT_OK) {
-                    // Store the image data as a bitmap for writing later.
-
+                    Intent myIntent = new Intent(GoogleDriveFileUpload.this, UserActivity.class);
+                    startActivity(myIntent);
                 }
                 break;
             case REQUEST_CODE_CREATOR:

@@ -23,7 +23,7 @@ import java.io.InputStreamReader;
 public class ExternalStorage extends AppCompatActivity {
 
     private static final String TAG = ExternalStorage.class.getSimpleName();
-    protected static Bitmap uploadImageFile = null;
+    protected static Bitmap uploadFile = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +32,8 @@ public class ExternalStorage extends AppCompatActivity {
         /* Checks if external storage is available for read and write */
         if(isExternalStorageReadable() && isExternalStorageWritable())
         {
-            Toast.makeText(getBaseContext(),"both permission is obtained",Toast.LENGTH_SHORT).show();
             performFileSearch();
         }
-
     }
 
 
@@ -95,10 +93,10 @@ public class ExternalStorage extends AppCompatActivity {
         ParcelFileDescriptor parcelFileDescriptor =
                 getContentResolver().openFileDescriptor(uri, "r");
         FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-        uploadImageFile = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+        uploadFile = BitmapFactory.decodeFileDescriptor(fileDescriptor);
         parcelFileDescriptor.close();
         this.finish();
-        return uploadImageFile;
+        return uploadFile;
     }
 
     @Override
@@ -127,65 +125,4 @@ public class ExternalStorage extends AppCompatActivity {
         }
     }
 
-
-
-    //read document file from external storage
-    private String readStringFromFile() {
-        if (!isExternalStorageWritable()) {
-            return null;
-        }
-
-        File dir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-        Log.e(TAG, "readStringFromFile: dir = " + dir.getAbsolutePath());
-
-        if (!dir.exists()) {
-            return null;
-        }
-
-        File file = new File(dir, "str.txt");
-        if (!file.exists()) {
-            return null;
-        }
-
-        FileInputStream fis = null;
-        InputStreamReader isr = null;
-        BufferedReader br = null;
-
-        StringBuffer sb = new StringBuffer();
-        try {
-            fis = new FileInputStream(file);
-            isr = new InputStreamReader(fis);
-            br = new BufferedReader(isr);
-
-            String line;
-            sb.append(br.readLine());
-            while ((line = br.readLine()) != null) {
-                sb.append("\n" + line);
-            }
-
-            br.close();
-            isr.close();
-            fis.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }  finally {
-            try {
-                if (br != null) {
-                    br.close();
-                }
-                if (isr != null) {
-                    isr.close();
-                }
-                if (fis != null) {
-                    fis.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return sb.toString();
-    }
 }
