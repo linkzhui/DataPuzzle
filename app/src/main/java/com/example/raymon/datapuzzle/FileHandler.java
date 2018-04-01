@@ -17,11 +17,11 @@ import java.util.List;
 
 public class FileHandler {
 
-    public static List<BufferedOutputStream> split(String filename, List<String> fileList) throws IOException
+    public static ArrayList<BufferedOutputStream> split(String filename, List<String> fileList) throws IOException
     {
         // open the file
         BufferedInputStream in = new BufferedInputStream(new FileInputStream(filename));
-        List<BufferedOutputStream> listOfOutFileStream = new ArrayList<>();
+        ArrayList<BufferedOutputStream> listOfOutFileStream = new ArrayList<>();
 
         // get the file length
         File f = new File(filename);

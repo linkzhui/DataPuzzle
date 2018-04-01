@@ -21,7 +21,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.BufferedOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class FileSplitMergeActivity extends AppCompatActivity {
@@ -39,6 +42,7 @@ public class FileSplitMergeActivity extends AppCompatActivity {
     private FileHandler fileHandle = new FileHandler();
     private ArrayList<String> fileList;
     private String filename;
+    private ArrayList<BufferedOutputStream> fragment_list;
     private final String TAG = "File Split and Merge";
 
     @Override
@@ -80,7 +84,7 @@ public class FileSplitMergeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    fileHandle.split(filename, fileList);
+                    fragment_list=fileHandle.split(filename, fileList);
                 } catch (Exception e){
                     Log.e("File", e.getMessage());
                     Toast.makeText(getBaseContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
@@ -101,8 +105,13 @@ public class FileSplitMergeActivity extends AppCompatActivity {
                 new EncryptInBG().execute(filename);
                 Log.i("Encrypt", "Doing encryption in background");
                 Toast.makeText(getBaseContext(),"Encrypting file...",Toast.LENGTH_LONG).show();
-//                Intent intent = new Intent(getApplicationContext(),GoogleDriveFileUploadActivity.class);
-//                intent.putStringArrayListExtra("fileList", fileList);
+                Intent intent = new Intent(getApplicationContext(),GoogleDriveFileUploadActivity.class);
+                intent.putStringArrayListExtra("fileList", fileList);
+
+                Bundle args = new Bundle();
+                args.putSerializable("ARRAYLIST",fragment_list);
+                intent.putExtra("fragment_list",args);
+                startActivityForResult(intent,1);
 
 
 

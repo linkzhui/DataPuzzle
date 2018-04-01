@@ -5,6 +5,7 @@ package com.example.raymon.datapuzzle;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -23,13 +24,13 @@ import java.io.BufferedOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 
 /**
  * An activity that creates a text file in the App Folder.
  */
 public class GoogleDriveFileUploadActivity extends BaseActivity {
     private static final String TAG = "CreateFileInAppFolder";
-
 
     @Override
     protected void onDriveClientReady() {
@@ -38,11 +39,27 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        new UploadFilesTask().execute();
+        Bundle args  = data.getBundleExtra("fragment_list");
+
+        //The file's fragments are stored into list of outputStream
+        ArrayList<BufferedOutputStream> fragment_list = (ArrayList<BufferedOutputStream>) args.getSerializable("ARRAYLIST");
+
+        //The fragment title is stored into list of String
+        ArrayList<String> fragment_title = data.getStringArrayListExtra("fileList");
+        switch (requestCode)
+        {
+            case 1:
+                UploadFilesTask task = new UploadFilesTask();
+                for(int i = 0;i<fragment_list.size();i++)
+                {
+                    FileInfo fileinfo = new FileInfo(fragment_list.get(i),fragment_title.get(i));
+                    task.execute(fileinfo);
+                }
+        }
     }
 
 
-    private class UploadFilesTask extends AsyncTask<FileInfo, Integer, Void> {
+    private class UploadFilesTask extends AsyncTask<FileInfo, Void, Void> {
         protected Void doInBackground(FileInfo... file_infos) {
             for(int i = 0;i<file_infos.length;i++)
             {
