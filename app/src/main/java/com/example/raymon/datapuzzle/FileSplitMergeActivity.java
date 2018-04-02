@@ -22,9 +22,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.BufferedOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class FileSplitMergeActivity extends AppCompatActivity {
@@ -50,9 +48,9 @@ public class FileSplitMergeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_split_merge);
 
-        mSelectSource = findViewById(R.id.buttonSource);
+        mSelectSource = findViewById(R.id.ButtonUpload);
         mMerge = findViewById(R.id.buttonMerge);
-        mSplit = findViewById(R.id.buttonSplit);
+        mSplit = findViewById(R.id.buttonDecMerge);
         mSourcePath = findViewById(R.id.sourceText);
         mPasswordText = findViewById(R.id.passwordText);
         mEncrypt = findViewById(R.id.buttonEncrypt);

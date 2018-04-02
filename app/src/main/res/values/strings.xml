@@ -29,4 +29,7 @@
     <string name="init_failed">Unable to initialize activity.</string>
     <string name="file_not_selected">No file selected, can not continue.</string>
     <string name="folder_not_selected">No folder selected, can not continue.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

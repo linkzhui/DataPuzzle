@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.google.jerry.filesplit.FileSplitMergeActivity">
+    tools:context="com.example.raymon.datapuzzle.FileSplitMergeActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -27,11 +27,11 @@
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/buttonSplit"
-        app:layout_constraintTop_toTopOf="@+id/buttonSplit" />
+        app:layout_constraintStart_toEndOf="@+id/buttonDecMerge"
+        app:layout_constraintTop_toTopOf="@+id/buttonDecMerge" />
 
     <Button
-        android:id="@+id/buttonSource"
+        android:id="@+id/ButtonUpload"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -87,7 +87,7 @@
         app:layout_constraintTop_toBottomOf="@+id/sourceText" />
 
     <Button
-        android:id="@+id/buttonSplit"
+        android:id="@+id/buttonDecMerge"
         android:layout_width="130dp"
         android:layout_height="48dp"
         android:layout_marginBottom="8dp"
@@ -109,7 +109,7 @@
         app:layout_constraintEnd_toStartOf="@+id/buttonDecrypt"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonSplit" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonDecMerge" />
 
     <Button
         android:id="@+id/buttonDecrypt"
