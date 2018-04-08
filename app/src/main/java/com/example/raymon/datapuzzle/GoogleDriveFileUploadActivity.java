@@ -5,8 +5,10 @@ package com.example.raymon.datapuzzle;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -81,6 +83,7 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
         final Task<DriveContents> createContentsTask = getDriveResourceClient().createContents();
         Tasks.whenAll(appFolderTask, createContentsTask)
                 .continueWithTask(new Continuation<Void, Task<DriveFile>>() {
+                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                     @Override
                     public Task<DriveFile> then(@NonNull Task<Void> task) throws Exception {
                         DriveFolder parent = appFolderTask.getResult();

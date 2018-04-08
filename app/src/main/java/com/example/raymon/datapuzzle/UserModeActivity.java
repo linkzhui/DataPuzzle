@@ -2,13 +2,18 @@ package com.example.raymon.datapuzzle;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,7 +23,8 @@ import static android.app.ActionBar.NAVIGATION_MODE_TABS;
 
 public class UserModeActivity extends FragmentActivity implements ActionBar.TabListener{
 
-
+    private static final int READ_REQUEST_CODE = 42;
+    final String TAG = "UserModeActivity";
     AppSectionsPagerAdapter mAppSectionsPagerAdapter;
 
     ViewPager mViewPager;
@@ -26,6 +32,8 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_mode);
+
+        contextOfApplication = getApplicationContext();
 
         //create the adapter that will return a feature mode for user's choice
         mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager());
@@ -42,7 +50,7 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
 
         // Set up the ViewPager, attaching the adapter and setting up a listener for when the
         // user swipes between sections.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager = findViewById(R.id.pager);
         mViewPager.setAdapter(mAppSectionsPagerAdapter);
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
@@ -83,6 +91,8 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
 
     }
+
+
 
 
     /**
@@ -150,6 +160,14 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
                 Toast.makeText(this, "Logout successful", Toast.LENGTH_SHORT).show();
         }
         return true;
+    }
+
+
+    // a static variable to get a reference of our application context
+    public static Context contextOfApplication;
+    public static Context getContextOfApplication()
+    {
+        return contextOfApplication;
     }
 
 }

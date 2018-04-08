@@ -1,6 +1,7 @@
 package com.example.raymon.datapuzzle;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -85,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                             //Intent myIntent = new Intent(MainActivity.this, GooDriveConnection.class);
-                            Intent myIntent = new Intent(MainActivity.this, QueryFileActivity.class);
+                            Intent myIntent = new Intent(MainActivity.this, UserModeActivity.class);
                             myIntent.putExtra("Username", username);
                             startActivity(myIntent);
 
@@ -103,6 +104,5 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
 
 }

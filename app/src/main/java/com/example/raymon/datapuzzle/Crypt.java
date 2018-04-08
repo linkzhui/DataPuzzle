@@ -1,5 +1,8 @@
 package com.example.raymon.datapuzzle;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.security.AlgorithmParameters;
@@ -18,12 +21,18 @@ import javax.crypto.spec.SecretKeySpec;
  */
 
 public class Crypt {
-    public void AESFileEncrypt(String filename) throws Exception{
+    public void AESFileEncrypt(CryptNode cryptNode) throws Exception{
+
+        //get filedescriptor and file name from cryptNode
+        FileDescriptor fileDescriptor = cryptNode.fileDescriptor;
+        String filename = cryptNode.filename[0];
+
         // file to be encrypted
-        FileInputStream inFile = new FileInputStream(filename);
+        BufferedInputStream inFile = new BufferedInputStream(new FileInputStream(fileDescriptor));
 
         // encrypted file
-        FileOutputStream outFile = new FileOutputStream(filename + ".encryptedfile.des");
+        BufferedOutputStream outFile = new BufferedOutputStream(new FileOutputStream(filename + ".encryptedfile.des"));
+
 
         // password to encrypt the file
         String password = "javapapers";
@@ -129,5 +138,15 @@ public class Crypt {
         fos.flush();
         fos.close();
         System.out.println("File Decrypted.");
+    }
+
+    public static class CryptNode{
+        FileDescriptor fileDescriptor;
+        String[] filename;
+        public CryptNode(FileDescriptor fileDescriptor, String[] filename)
+        {
+            this.fileDescriptor = fileDescriptor;
+            this.filename = filename;
+        }
     }
 }

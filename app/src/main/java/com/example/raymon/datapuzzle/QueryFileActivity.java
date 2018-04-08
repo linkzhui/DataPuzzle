@@ -76,6 +76,7 @@ public class QueryFileActivity extends BaseActivity {
                             public void onSuccess(MetadataBuffer metadataBuffer) {
                                 Log.e("File","found successful");
                                 mResultsAdapter.append(metadataBuffer);
+                                mResultsAdapter.notifyDataSetChanged();
                             }
                         })
                 .addOnFailureListener(this, new OnFailureListener() {

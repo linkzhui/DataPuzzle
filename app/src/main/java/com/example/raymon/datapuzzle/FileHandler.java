@@ -4,7 +4,6 @@ import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,16 +16,18 @@ import java.util.List;
 
 public class FileHandler {
 
-    public static ArrayList<BufferedOutputStream> split(String filename, List<String> fileList) throws IOException
+
+    //BufferedInputStream in will be data for the selected file from external storage
+    //string[] result, result[0] is file's name, result[1] is file's size
+    //List<String> fileList, will be the list to store the fragment' name
+    public static ArrayList<BufferedOutputStream> split(BufferedInputStream in,String[] result, List<String> fileList) throws IOException
     {
+
         // open the file
-        BufferedInputStream in = new BufferedInputStream(new FileInputStream(filename));
+
         ArrayList<BufferedOutputStream> listOfOutFileStream = new ArrayList<>();
-
-        // get the file length
-        File f = new File(filename);
-        long fileSize = f.length();
-
+        long fileSize = Long.parseLong(result[1]);
+        String filename = result[0];
         // loop for each full chunk
         int subfile;
         long chunkSize = fileSize/2;
@@ -53,7 +54,7 @@ public class FileHandler {
             }
 
             // close the file
-//            out.close();
+            out.close();
         }
         if(in.read() != -1){
             Log.e("File Split", "File split not completed.");
