@@ -1,21 +1,16 @@
 package com.example.raymon.datapuzzle;
 
 import android.app.Activity;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,13 +21,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+
 import java.io.File;
 import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
+
 
 //remaining task in this fragment:
 //1. use intent to start the file split, merge and upload activity  (upload mode)
@@ -44,11 +37,10 @@ public class IndividualModeFragment extends Fragment {
     private Button mbuttonUpload;
     private Button mbuttonDownload;
     private EditText mpasswordText;
-    private ArrayList<BufferedOutputStream> fragment_list;
-    private ArrayList<String> fileList;
     private Crypt crypt = new Crypt();
     private FileHandler fileHandle = new FileHandler();
-
+    private File encryptFile;
+    final int requestCode = 1;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                          Bundle savedInstanceState) {
@@ -126,14 +118,22 @@ public class IndividualModeFragment extends Fragment {
                     //convert the data from uri to BufferedInputStream to split and encrypt, BufferedInputStream have better performance in I/O read and write
                     parcelFileDescriptor = applicationContext.getContentResolver().openFileDescriptor(uri, "r");
                     FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-                    BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(fileDescriptor));
+
+                    //result[0]: retrieve the fileName from the selected file
+                    //result[1]: retrieve the fileSize from the selected file
                     String[] result = getFileMetaData(uri);
                     try {
 //                        fragment_list=fileHandle.split(bufferedInputStream,result, fileList);
-                        Crypt.CryptNode cryptNode = new Crypt.CryptNode(fileDescriptor,result);
+                        Crypt.CryptNode cryptNode = new Crypt.CryptNode(fileDescriptor,result[0],mpasswordText.getText().toString());
                         new EncryptInBG().execute(cryptNode);
+                        FileHandler.FileHandlerInfo fileHandlerInfo = new FileHandler.FileHandlerInfo(result[0],result[1],encryptFile);
+                        GoogleDriveFileUploadActivity.FileUploadInfo[] fileUploadInfo = fileHandle.split(fileHandlerInfo);
 
-                        //
+                        Intent intent = new Intent(getActivity(),GoogleDriveFileUploadActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("fragment_info",fileUploadInfo);
+                        intent.putExtras(bundle);
+                        startActivityForResult(intent,requestCode);
 
                     } catch (Exception e){
                         Log.e("File", e.getMessage());
@@ -206,10 +206,11 @@ public class IndividualModeFragment extends Fragment {
             try {
                 for(int i = 0;i<cryptNodes.length;i++)
                 {
-                    crypt.AESFileEncrypt(cryptNodes[i]);
+                    //get the encrypt file from AESFileEncrypt function
+                    encryptFile = crypt.AESFileEncrypt(cryptNodes[i]);
                 }
             } catch (Exception e){
-                Log.e("File", e.getMessage());
+                Log.e("File Encrypt", e.getMessage());
                 // Caused by: java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare()
                 //Toast.makeText(getBaseContext(),e.getMessage(),Toast.LENGTH_LONG).show();
             }

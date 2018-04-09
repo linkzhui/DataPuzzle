@@ -1,7 +1,10 @@
 package com.example.raymon.datapuzzle;
 
+import android.content.Context;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,21 +24,25 @@ import javax.crypto.spec.SecretKeySpec;
  */
 
 public class Crypt {
-    public void AESFileEncrypt(CryptNode cryptNode) throws Exception{
+    public File AESFileEncrypt(CryptNode cryptNode) throws Exception{
 
         //get filedescriptor and file name from cryptNode
         FileDescriptor fileDescriptor = cryptNode.fileDescriptor;
-        String filename = cryptNode.filename[0];
-
+        String filename = cryptNode.fileName;
+        Context context=UserModeActivity.getContextOfApplication();
         // file to be encrypted
         BufferedInputStream inFile = new BufferedInputStream(new FileInputStream(fileDescriptor));
 
+        File encryptFile;
+        //The Files.createTempFile method provides an alternative method to create an empty file in the temporary-file directory.
+        //Files created by that method may have more restrictive access permissions to files created by this method and so may be more suited to security-sensitive applications.
+        encryptFile = File.createTempFile(filename,".encryptedfile.des",context.getCacheDir());
         // encrypted file
-        BufferedOutputStream outFile = new BufferedOutputStream(new FileOutputStream(filename + ".encryptedfile.des"));
+        BufferedOutputStream outFile = new BufferedOutputStream(new FileOutputStream(encryptFile));
 
 
         // password to encrypt the file
-        String password = "javapapers";
+        String password = cryptNode.password;
 
         // password, iv and salt should be transferred to the other end
         // in a secure manner
@@ -44,16 +51,16 @@ public class Crypt {
         // writing it to a file
         // salt should be transferred to the recipient securely
         // for decryption
-        byte[] salt = new byte[8];
-        SecureRandom secureRandom = new SecureRandom();
-        secureRandom.nextBytes(salt);
-        FileOutputStream saltOutFile = new FileOutputStream(filename + ".salt.enc");
-        saltOutFile.write(salt);
-        saltOutFile.close();
+//        byte[] salt = new byte[8];
+//        SecureRandom secureRandom = new SecureRandom();
+//        secureRandom.nextBytes(salt);
+//        FileOutputStream saltOutFile = new FileOutputStream(filename + ".salt.enc");
+//        saltOutFile.write(salt);
+//        saltOutFile.close();
 
         SecretKeyFactory factory = SecretKeyFactory
                 .getInstance("PBKDF2WithHmacSHA1");
-        KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, 65536,
+        KeySpec keySpec = new PBEKeySpec(password.toCharArray(), null, 65536,
                 256);
         SecretKey secretKey = factory.generateSecret(keySpec);
         SecretKey secret = new SecretKeySpec(secretKey.getEncoded(), "AES");
@@ -91,6 +98,7 @@ public class Crypt {
         outFile.close();
 
         System.out.println("File Encrypted.");
+        return encryptFile;
     }
 
     public void AESFileDecryption (String filename) throws Exception {
@@ -142,11 +150,15 @@ public class Crypt {
 
     public static class CryptNode{
         FileDescriptor fileDescriptor;
-        String[] filename;
-        public CryptNode(FileDescriptor fileDescriptor, String[] filename)
+
+        //string[] to store file info:
+        String fileName;
+        String password;
+        public CryptNode(FileDescriptor fileDescriptor, String fileName, String password)
         {
             this.fileDescriptor = fileDescriptor;
-            this.filename = filename;
+            this.fileName = fileName;
+            this.password = password;
         }
     }
 }

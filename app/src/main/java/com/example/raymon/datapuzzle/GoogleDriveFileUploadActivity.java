@@ -21,8 +21,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-
+import org.apache.commons.io.IOUtils;
 import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -32,8 +35,8 @@ import java.util.ArrayList;
  * An activity that creates a text file in the App Folder.
  */
 public class GoogleDriveFileUploadActivity extends BaseActivity {
-    private static final String TAG = "CreateFileInAppFolder";
 
+    private static final String TAG = "CreateFileInAppFolder";
     @Override
     protected void onDriveClientReady() {
 
@@ -41,28 +44,25 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        Bundle args  = data.getBundleExtra("fragment_list");
 
-        //The file's fragments are stored into list of outputStream
-        ArrayList<BufferedOutputStream> fragment_list = (ArrayList<BufferedOutputStream>) args.getSerializable("ARRAYLIST");
+        Intent intent = this.getIntent();
+        Bundle bundle = intent.getExtras();
+        FileUploadInfo[] fileUploadInfo = (FileUploadInfo[]) bundle.getSerializable("fragment_info");
 
-        //The fragment title is stored into list of String
-        ArrayList<String> fragment_title = data.getStringArrayListExtra("fileList");
         switch (requestCode)
         {
             case 1:
                 UploadFilesTask task = new UploadFilesTask();
-                for(int i = 0;i<fragment_list.size();i++)
+                for(int i = 0;i<fileUploadInfo.length;i++)
                 {
-                    FileInfo fileinfo = new FileInfo(fragment_list.get(i),fragment_title.get(i));
-                    task.execute(fileinfo);
+                    task.execute(fileUploadInfo[i]);
                 }
         }
     }
 
 
-    private class UploadFilesTask extends AsyncTask<FileInfo, Void, Void> {
-        protected Void doInBackground(FileInfo... file_infos) {
+    private class UploadFilesTask extends AsyncTask<FileUploadInfo, Void, Void> {
+        protected Void doInBackground(FileUploadInfo... file_infos) {
             for(int i = 0;i<file_infos.length;i++)
             {
                 createFileInAppFolder(file_infos[i]);
@@ -78,7 +78,7 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
 
 
     // [START create_file_in_appfolder]
-    private void createFileInAppFolder(final FileInfo file_info) {
+    private void createFileInAppFolder(final FileUploadInfo fileUploadInfo) {
         final Task<DriveFolder> appFolderTask = getDriveResourceClient().getRootFolder();
         final Task<DriveContents> createContentsTask = getDriveResourceClient().createContents();
         Tasks.whenAll(appFolderTask, createContentsTask)
@@ -89,12 +89,11 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
                         DriveFolder parent = appFolderTask.getResult();
                         DriveContents contents = createContentsTask.getResult();
                         OutputStream outputStream = contents.getOutputStream();
-                        try (Writer writer = new OutputStreamWriter(outputStream)) {
-                            writer.write(file_info.bufferedOutputStream.toString());
-                        }
+                        InputStream inputStream = new FileInputStream(fileUploadInfo.fragment);
+                        IOUtils.copy(inputStream,outputStream);
 
                         MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                                .setTitle(file_info.file_title)
+                                .setTitle(fileUploadInfo.fragName)
                                 .setMimeType("text/plain")
                                 .setStarred(true)
                                 .build();
@@ -121,4 +120,15 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
                 });
     }
     // [END create_file_in_appfolder]
+
+
+    public class FileUploadInfo{
+        File fragment;
+        String fragName;
+        public FileUploadInfo(File fragment, String fragName)
+        {
+            this.fragment = fragment;
+            this.fragName = fragName;
+        }
+    }
 }
