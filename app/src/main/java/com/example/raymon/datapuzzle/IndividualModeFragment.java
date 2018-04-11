@@ -22,6 +22,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
@@ -41,6 +44,7 @@ public class IndividualModeFragment extends Fragment {
     private FileHandler fileHandle = new FileHandler();
     private File encryptFile;
     final int requestCode = 1;
+    private String username;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                          Bundle savedInstanceState) {
@@ -52,7 +56,7 @@ public class IndividualModeFragment extends Fragment {
         mpasswordText = fragmentView.findViewById(R.id.passwordText);
         mbuttonDownload = fragmentView.findViewById(R.id.buttonDecMerge);
         mbuttonUpload = fragmentView.findViewById(R.id.buttonUpload);
-
+        username = getArguments().getString("username");
         //set onclick listener on upload button
         mbuttonUpload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +88,8 @@ public class IndividualModeFragment extends Fragment {
                 else{
                     //start activity
 
+                    Intent intent = new Intent(getActivity(),IndividualFileDownloadActivity.class);
+                    startActivity(intent);
 
                 }
             }
@@ -126,8 +132,8 @@ public class IndividualModeFragment extends Fragment {
 //                        fragment_list=fileHandle.split(bufferedInputStream,result, fileList);
                         Crypt.CryptNode cryptNode = new Crypt.CryptNode(fileDescriptor,result[0],mpasswordText.getText().toString());
                         new EncryptInBG().execute(cryptNode);
-                        FileHandler.FileHandlerInfo fileHandlerInfo = new FileHandler.FileHandlerInfo(result[0],result[1],encryptFile);
-                        GoogleDriveFileUploadActivity.FileUploadInfo[] fileUploadInfo = fileHandle.split(fileHandlerInfo);
+                        FileHandler.FileHandlerInfo fileHandlerInfo = new FileHandler.FileHandlerInfo(result[0],result[1],encryptFile,username);
+                        GoogleDriveFileUploadActivity.FileUploadInfo[] fileUploadInfo = fileHandle.split(fileHandlerInfo,"individual");
 
                         Intent intent = new Intent(getActivity(),GoogleDriveFileUploadActivity.class);
                         Bundle bundle = new Bundle();

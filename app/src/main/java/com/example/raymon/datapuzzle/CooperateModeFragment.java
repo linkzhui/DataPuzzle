@@ -19,6 +19,7 @@ public class CooperateModeFragment extends Fragment {
     private Button mbuttonDecMerge;
     private Button mbuttonWifiDirect;
     private EditText passwordText;
+    private String username;
     public CooperateModeFragment() {
         // Required empty public constructor
 
@@ -30,9 +31,10 @@ public class CooperateModeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View fragment_view = inflater.inflate(R.layout.fragment_cooperate_mode, container, false);
-
+        username = getArguments().getString("username");
 
         return fragment_view;
     }
+
 
 }

@@ -3,6 +3,12 @@ package com.example.raymon.datapuzzle;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -24,26 +30,30 @@ public class FileHandler {
     //List<String> fileList, will be the list to store the fragment' name
 
 
-    Context context = UserModeActivity.getContextOfApplication();
-    public GoogleDriveFileUploadActivity.FileUploadInfo[] split(FileHandlerInfo fileHandlerInfo) throws IOException
+    private Context context = UserModeActivity.getContextOfApplication();
+    private DatabaseReference mDatabase;
+    private String TAG = "File Handler";
+    public GoogleDriveFileUploadActivity.FileUploadInfo[] split(FileHandlerInfo fileHandlerInfo, String mode) throws IOException
     {
 
         // open the file
 
         long fileSize = Long.parseLong(fileHandlerInfo.fileSize);
-        String filename = fileHandlerInfo.fileName;
-        // loop for each full chunk
-        int subfile;
+        final String filename = fileHandlerInfo.fileName;
+
+        //Get the Google firebase database instance
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        //Get the account username
+        final String username = fileHandlerInfo.username;
         long chunkSize = fileSize/2;
         GoogleDriveFileUploadActivity.FileUploadInfo[] fileUploadInfo = new GoogleDriveFileUploadActivity.FileUploadInfo[2];
         //get InputStream from encryptFile
         BufferedInputStream in = new BufferedInputStream(new FileInputStream(fileHandlerInfo.encryptFile));
-        for (subfile = 0; subfile < 2; subfile++)
+
+        for (int subfile = 0; subfile < 2; subfile++)
         {
             // Create the temp fragment file to store the result of split file
             File temp_file = File.createTempFile(filename,"."+subfile,context.getCacheDir());
-
-
 
             //get
             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(temp_file));
@@ -72,6 +82,70 @@ public class FileHandler {
         if(in.read() != -1){
             Log.e("File Split", "File split not completed.");
         }
+        else{
+
+            Log.i(TAG,"file split completed successful");
+            final String framgentName_0 = fileUploadInfo[0].fragName;
+            final String fragmentName_1 = fileUploadInfo[1].fragName;
+            switch (mode)
+            {
+                case "cooperate":
+                    final String fragmentName_2 = fileUploadInfo[2].fragName;
+                    //*************unfinished block, implement XOR right there:*************
+
+
+
+
+                    //add the file fragment name into firebase database
+                    mDatabase.child(username).child("files").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.hasChild(filename))
+                            {
+                                //delete exist file fragment from the file list
+                                mDatabase.child(username).child("files").child(filename).setValue(null);
+                            }
+
+                            mDatabase.child(username).child("files").child(filename).child("fragments").setValue(0,framgentName_0);
+                            mDatabase.child(username).child("files").child(filename).child("fragments").setValue(1,fragmentName_1);
+                            mDatabase.child(username).child("files").child(filename).child("fragments").setValue(2,fragmentName_2);
+                            mDatabase.child(username).child("files").child(filename).setValue("mode","cooperate");
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                    break;
+                case "individual":
+                    //add the file fragment name into firebase database
+                    mDatabase.child(username).child("files").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.hasChild(filename))
+                            {
+                                //delete exist file fragment from the file list
+                                mDatabase.child(username).child("files").child(filename).setValue(null);
+                            }
+
+                            mDatabase.child(username).child("files").child(filename).child("fragments").setValue(0,framgentName_0);
+                            mDatabase.child(username).child("files").child(filename).child("fragments").setValue(1,fragmentName_1);
+                            mDatabase.child(username).child("files").child(filename).setValue("mode","individual");
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                    break;
+            }
+        }
+
+
+
+
 //        // loop for the last chunk (which may be smaller than the chunk size)
 //        if (fileSize != chunkSize * (subfile - 1))
 //        {
@@ -89,7 +163,6 @@ public class FileHandler {
 
         // close the file
         in.close();
-        Log.i("File Split", "Returning File List");
         return fileUploadInfo;
     }
 
@@ -103,10 +176,12 @@ public class FileHandler {
         String fileName;
         String fileSize;
         File encryptFile;
-        public FileHandlerInfo(String fileName, String fileSize, File encryptFile){
+        String username;
+        public FileHandlerInfo(String fileName, String fileSize, File encryptFile, String username){
             this.fileName = fileName;
             this.fileSize = fileSize;
             this.encryptFile = encryptFile;
+            this.username = username;
         }
 
     }

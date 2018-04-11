@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
                             //Intent myIntent = new Intent(MainActivity.this, GooDriveConnection.class);
                             Intent myIntent = new Intent(MainActivity.this, UserModeActivity.class);
-                            myIntent.putExtra("Username", username);
+                            myIntent.putExtra("username", username);
                             startActivity(myIntent);
 
                         } else {

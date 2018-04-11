@@ -26,15 +26,15 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
     private static final int READ_REQUEST_CODE = 42;
     final String TAG = "UserModeActivity";
     AppSectionsPagerAdapter mAppSectionsPagerAdapter;
-
+    private String username;
     ViewPager mViewPager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_mode);
-
+        Intent intent = getIntent();
+        username = intent.getStringExtra("username");
         contextOfApplication = getApplicationContext();
-
         //create the adapter that will return a feature mode for user's choice
         mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager());
 
@@ -99,7 +99,7 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
      * AppSectionsPagerAdapter that returns a fragment corresponding to the user's choice
      * sections of the app.
      */
-    public static class AppSectionsPagerAdapter extends FragmentPagerAdapter {
+    public class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
         public AppSectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -107,15 +107,24 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
 
         @Override
         public Fragment getItem(int i) {
+            Bundle bundle = new Bundle();
+            bundle.putString("username",username);
             switch (i) {
                 default:
                     // return individual mode to the user
-                    return new IndividualModeFragment();
+                    //Pass the username from User Mode Activity to individual mode fragment using bundle
+                    IndividualModeFragment individualModeFragment = new IndividualModeFragment();
+                    individualModeFragment.setArguments(bundle);
+                    return individualModeFragment;
 
                 case 1:
                     // return cooperate mode to the user
                     // The other sections of the app are dummy placeholders.
-                    return new CooperateModeFragment();
+                    //Pass the username from User Mode Activity to cooperate mode fragment using bundle
+                    CooperateModeFragment cooperateModeFragment = new CooperateModeFragment();
+                    cooperateModeFragment.setArguments(bundle);
+                    return cooperateModeFragment;
+
             }
         }
 
