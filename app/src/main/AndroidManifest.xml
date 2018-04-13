@@ -36,7 +36,6 @@
         <activity android:name=".WifiTransferFileActivity" />
         <activity android:name=".GoogleDriveFileUploadActivity" />
         <activity android:name=".FileDownloadActivity" />
-        <activity android:name=".FileSplitMergeActivity" />
         <activity
             android:name=".UserModeActivity"
             android:theme="@android:style/Theme.Holo.Light.DarkActionBar"></activity>

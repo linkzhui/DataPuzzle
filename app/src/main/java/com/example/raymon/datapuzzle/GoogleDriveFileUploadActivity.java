@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
 
@@ -39,12 +40,21 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
     private static final String TAG = "CreateFileInAppFolder";
     @Override
     protected void onDriveClientReady() {
+        Log.i(TAG,"on Drive Client Ready");
+        Intent intent = this.getIntent();
+        Bundle bundle = intent.getExtras();
+        FileUploadInfo fileUploadInfo = (FileUploadInfo) bundle.getSerializable("fragment_info");
+        Log.i(TAG,"begin upload");
+        UploadFilesTask task = new UploadFilesTask();
+        task.execute(fileUploadInfo);
+
 
     }
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
 
+        Log.i(TAG,"receive the intent");
         Intent intent = this.getIntent();
         Bundle bundle = intent.getExtras();
         FileUploadInfo[] fileUploadInfo = (FileUploadInfo[]) bundle.getSerializable("fragment_info");
@@ -52,11 +62,13 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
         switch (requestCode)
         {
             case 1:
+                Log.i(TAG,"begin upload");
                 UploadFilesTask task = new UploadFilesTask();
                 for(int i = 0;i<fileUploadInfo.length;i++)
                 {
                     task.execute(fileUploadInfo[i]);
                 }
+                break;
         }
     }
 
@@ -65,7 +77,10 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
         protected Void doInBackground(FileUploadInfo... file_infos) {
             for(int i = 0;i<file_infos.length;i++)
             {
-                createFileInAppFolder(file_infos[i]);
+                for(int j = 0;j<file_infos[i].fragment.length;j++)
+                {
+                    createFileInAppFolder(file_infos[i].fragment[j],file_infos[i].fragName[j]);
+                }
             }
             return null;
         }
@@ -78,7 +93,7 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
 
 
     // [START create_file_in_appfolder]
-    private void createFileInAppFolder(final FileUploadInfo fileUploadInfo) {
+    private void createFileInAppFolder(final File fragment, final String filename) {
         final Task<DriveFolder> appFolderTask = getDriveResourceClient().getRootFolder();
         final Task<DriveContents> createContentsTask = getDriveResourceClient().createContents();
         Tasks.whenAll(appFolderTask, createContentsTask)
@@ -89,11 +104,11 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
                         DriveFolder parent = appFolderTask.getResult();
                         DriveContents contents = createContentsTask.getResult();
                         OutputStream outputStream = contents.getOutputStream();
-                        InputStream inputStream = new FileInputStream(fileUploadInfo.fragment);
+                        InputStream inputStream = new FileInputStream(fragment);
                         IOUtils.copy(inputStream,outputStream);
 
                         MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                                .setTitle(fileUploadInfo.fragName)
+                                .setTitle(filename)
                                 .setMimeType("text/plain")
                                 .setStarred(true)
                                 .build();
@@ -121,11 +136,10 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
     }
     // [END create_file_in_appfolder]
 
-
-    public class FileUploadInfo{
-        File fragment;
-        String fragName;
-        public FileUploadInfo(File fragment, String fragName)
+    public static class FileUploadInfo implements Serializable {
+        File[] fragment;
+        String[] fragName;
+        public FileUploadInfo(File[] fragment, String[] fragName)
         {
             this.fragment = fragment;
             this.fragName = fragName;

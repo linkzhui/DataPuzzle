@@ -20,11 +20,11 @@
             android:layout_marginTop="112dp"
             android:text="Split/Encryption"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/passwordText" />
+            app:layout_constraintTop_toTopOf="@+id/secretKeyText" />
 
 
         <EditText
-            android:id="@+id/passwordText"
+            android:id="@+id/secretKeyText"
             android:layout_width="232dp"
             android:layout_height="44dp"
             android:layout_marginStart="148dp"
@@ -37,13 +37,13 @@
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="102dp"
-            android:layout_height="23dp"
+            android:layout_width="116dp"
+            android:layout_height="27dp"
             android:layout_marginEnd="24dp"
             android:layout_marginStart="28dp"
             android:layout_marginTop="92dp"
-            android:text="Input password"
-            app:layout_constraintEnd_toStartOf="@+id/passwordText"
+            android:text="Input secret Key:"
+            app:layout_constraintEnd_toStartOf="@+id/secretKeyText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

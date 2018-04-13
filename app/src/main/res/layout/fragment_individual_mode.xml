@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,15 +16,16 @@
             android:id="@+id/buttonUpload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="148dp"
-            android:layout_marginTop="112dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="108dp"
             android:text="Upload"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/passwordText" />
+            app:layout_constraintTop_toTopOf="@+id/secretKeyText" />
 
 
         <EditText
-            android:id="@+id/passwordText"
+            android:id="@+id/secretKeyText"
             android:layout_width="232dp"
             android:layout_height="46dp"
             android:layout_marginStart="148dp"
@@ -31,18 +33,19 @@
             android:contentDescription="Encryption Password "
             android:ems="10"
             android:inputType="text"
+            android:text="test"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="102dp"
-            android:layout_height="27dp"
+            android:layout_width="123dp"
+            android:layout_height="28dp"
             android:layout_marginEnd="24dp"
             android:layout_marginStart="28dp"
             android:layout_marginTop="92dp"
-            android:text="Input password"
-            app:layout_constraintEnd_toStartOf="@+id/passwordText"
+            android:text="Input Secret Key:"
+            app:layout_constraintEnd_toStartOf="@+id/secretKeyText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -50,13 +53,10 @@
             android:id="@+id/buttonDecMerge"
             android:layout_width="130dp"
             android:layout_height="48dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="124dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginEnd="60dp"
+            android:layout_marginRight="60dp"
             android:text="Download"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.599" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/buttonUpload" />
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>

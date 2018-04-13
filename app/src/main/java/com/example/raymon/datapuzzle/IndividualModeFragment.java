@@ -22,12 +22,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
 
 
 //remaining task in this fragment:
@@ -39,7 +34,7 @@ public class IndividualModeFragment extends Fragment {
     private static final String TAG = "Individual Mode";
     private Button mbuttonUpload;
     private Button mbuttonDownload;
-    private EditText mpasswordText;
+    private EditText secretKeyText;
     private Crypt crypt = new Crypt();
     private FileHandler fileHandle = new FileHandler();
     private File encryptFile;
@@ -53,7 +48,7 @@ public class IndividualModeFragment extends Fragment {
         View fragmentView = inflater.inflate(R.layout.fragment_individual_mode, container, false);
 
 
-        mpasswordText = fragmentView.findViewById(R.id.passwordText);
+        secretKeyText = fragmentView.findViewById(R.id.secretKeyText);
         mbuttonDownload = fragmentView.findViewById(R.id.buttonDecMerge);
         mbuttonUpload = fragmentView.findViewById(R.id.buttonUpload);
         username = getArguments().getString("username");
@@ -61,7 +56,7 @@ public class IndividualModeFragment extends Fragment {
         mbuttonUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mpasswordText.getText().length()==0)
+                if(secretKeyText.getText().length()==0)
                 {
                     Toast.makeText(getContext(), "Please input the password", Toast.LENGTH_SHORT).show();
                 }
@@ -81,14 +76,14 @@ public class IndividualModeFragment extends Fragment {
         mbuttonDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mpasswordText.getText().length()==0)
+                if(secretKeyText.getText().length()==0)
                 {
                     Toast.makeText(getContext(), "Please input the password", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    //start activity
-
+                    //start the activity to return a list of files which are available to be downloaded by user
                     Intent intent = new Intent(getActivity(),IndividualFileDownloadActivity.class);
+                    intent.putExtra("username",username);
                     startActivity(intent);
 
                 }
@@ -115,40 +110,38 @@ public class IndividualModeFragment extends Fragment {
 
             if (resultData != null) {
                 uri = resultData.getData();
-                Log.i("URI", "Uri: " + uri.toString());
+                Log.i(TAG, "Uri: " + uri.toString());
                 Context applicationContext = UserModeActivity.getContextOfApplication();
                 ParcelFileDescriptor parcelFileDescriptor;
+
+
+                //convert the data from uri to BufferedInputStream to split and encrypt, BufferedInputStream have better performance in I/O read and write
+//                    parcelFileDescriptor = applicationContext.getContentResolver().openFileDescriptor(uri, "r");
+//                    FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+
+                //result[0]: retrieve the fileName from the selected file
+                //result[1]: retrieve the fileSize from the selected file
+                String[] result = getFileMetaData(uri);
                 try {
-
-
-                    //convert the data from uri to BufferedInputStream to split and encrypt, BufferedInputStream have better performance in I/O read and write
-                    parcelFileDescriptor = applicationContext.getContentResolver().openFileDescriptor(uri, "r");
-                    FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-
-                    //result[0]: retrieve the fileName from the selected file
-                    //result[1]: retrieve the fileSize from the selected file
-                    String[] result = getFileMetaData(uri);
-                    try {
 //                        fragment_list=fileHandle.split(bufferedInputStream,result, fileList);
-                        Crypt.CryptNode cryptNode = new Crypt.CryptNode(fileDescriptor,result[0],mpasswordText.getText().toString());
-                        new EncryptInBG().execute(cryptNode);
-                        FileHandler.FileHandlerInfo fileHandlerInfo = new FileHandler.FileHandlerInfo(result[0],result[1],encryptFile,username);
-                        GoogleDriveFileUploadActivity.FileUploadInfo[] fileUploadInfo = fileHandle.split(fileHandlerInfo,"individual");
+                    Crypt.CryptNode cryptNode = new Crypt.CryptNode(uri,result[0],secretKeyText.getText().toString());
 
-                        Intent intent = new Intent(getActivity(),GoogleDriveFileUploadActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("fragment_info",fileUploadInfo);
-                        intent.putExtras(bundle);
-                        startActivityForResult(intent,requestCode);
+                    //call AsyncTask.get() for Main thread UI to wait until the async task is finished.
+                    new EncryptInBG().execute(cryptNode).get();
 
-                    } catch (Exception e){
-                        Log.e("File", e.getMessage());
-                        Toast.makeText(getContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
-                    }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    FileHandler.FileHandlerInfo fileHandlerInfo = new FileHandler.FileHandlerInfo(result[0],encryptFile,username);
+                    GoogleDriveFileUploadActivity.FileUploadInfo fileUploadInfo = fileHandle.split(fileHandlerInfo,"individual");
+
+                    Intent intent = new Intent(getActivity(),GoogleDriveFileUploadActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("fragment_info",fileUploadInfo);
+                    intent.putExtras(bundle);
+                    startActivityForResult(intent,1);
+
+                } catch (Exception e){
+                    Log.e("File", e.getMessage()+"");
+                    Toast.makeText(getContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
-
             }
         }
     }
@@ -205,27 +198,39 @@ public class IndividualModeFragment extends Fragment {
         return result;
     }
 
-    private class EncryptInBG extends AsyncTask<Crypt.CryptNode, Void, Void> {
+    private class EncryptInBG extends AsyncTask<Crypt.CryptNode, Void, Boolean> {
 
         @Override
-        protected Void doInBackground(Crypt.CryptNode... cryptNodes) {
+        protected Boolean doInBackground(Crypt.CryptNode... cryptNodes) {
+            boolean result = false;
             try {
                 for(int i = 0;i<cryptNodes.length;i++)
                 {
+                    Log.i(TAG,"Begin File encrypt");
                     //get the encrypt file from AESFileEncrypt function
                     encryptFile = crypt.AESFileEncrypt(cryptNodes[i]);
+                    result = true;
                 }
             } catch (Exception e){
                 Log.e("File Encrypt", e.getMessage());
                 // Caused by: java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare()
                 //Toast.makeText(getBaseContext(),e.getMessage(),Toast.LENGTH_LONG).show();
             }
-            return null;
+            finally {
+                return result;
+            }
+
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            Toast.makeText(getContext(),"Encryption completed.",Toast.LENGTH_LONG).show();
+        protected void onPostExecute(Boolean result) {
+            if(result)
+            {
+                Toast.makeText(getContext(),"Encryption completed.",Toast.LENGTH_LONG).show();
+            }
+           else{
+                Toast.makeText(getContext(),"Encryption failed.",Toast.LENGTH_LONG).show();
+            }
         }
     }
 
