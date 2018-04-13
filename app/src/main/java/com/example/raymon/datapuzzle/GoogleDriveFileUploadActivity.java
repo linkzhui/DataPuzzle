@@ -15,22 +15,24 @@ import android.widget.Toast;
 import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveFolder;
+import com.google.android.gms.drive.Metadata;
 import com.google.android.gms.drive.MetadataChangeSet;
+import com.google.android.gms.drive.query.Filters;
+import com.google.android.gms.drive.query.Query;
+import com.google.android.gms.drive.query.SearchableField;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import org.apache.commons.io.IOUtils;
-import java.io.BufferedOutputStream;
+import com.google.android.gms.drive.MetadataBuffer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Serializable;
-import java.io.Writer;
-import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 /**
  * An activity that creates a text file in the App Folder.
@@ -46,30 +48,55 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
         FileUploadInfo fileUploadInfo = (FileUploadInfo) bundle.getSerializable("fragment_info");
         Log.i(TAG,"begin upload");
         UploadFilesTask task = new UploadFilesTask();
+        DeleteFilesTask deleteFilesTask = new DeleteFilesTask();
+        try {
+            deleteFilesTask.execute(fileUploadInfo).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
         task.execute(fileUploadInfo);
-
 
     }
 
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
 
-        Log.i(TAG,"receive the intent");
-        Intent intent = this.getIntent();
-        Bundle bundle = intent.getExtras();
-        FileUploadInfo[] fileUploadInfo = (FileUploadInfo[]) bundle.getSerializable("fragment_info");
+    private class DeleteFilesTask extends AsyncTask<FileUploadInfo,Void,Void>
+    {
 
-        switch (requestCode)
-        {
-            case 1:
-                Log.i(TAG,"begin upload");
-                UploadFilesTask task = new UploadFilesTask();
-                for(int i = 0;i<fileUploadInfo.length;i++)
-                {
-                    task.execute(fileUploadInfo[i]);
-                }
-                break;
+        @Override
+        protected Void doInBackground(FileUploadInfo... fileUploadInfos) {
+            for(int j = 0;j<fileUploadInfos[0].fragment.length;j++)
+            {
+                queryFile(fileUploadInfos[0].fragName[j]);
+            }
+            return null;
         }
+    }
+    private void queryFile(String filename)
+    {
+        Query query = new Query.Builder()
+                .addFilter(Filters.eq(SearchableField.TITLE, filename))
+                .build();
+        Task<MetadataBuffer> queryTask = getDriveResourceClient().query(query)
+                .addOnSuccessListener(this,
+                        new OnSuccessListener<MetadataBuffer>() {
+                            @Override
+                            public void onSuccess(MetadataBuffer metadataBuffer) {
+                                Log.i(TAG,"duplicate file detected");
+                                for(Metadata data:metadataBuffer)
+                                {
+                                    deleteFile(data.getDriveId().asDriveFile());
+                                }
+                            }
+                        })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i(TAG, "No duplicate file detected");
+                        finish();
+                    }
+                });
     }
 
 
@@ -91,6 +118,29 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
         }
     }
 
+    //Delete the fole in google drive
+    private void deleteFile(DriveFile file) {
+        // [START delete_file]
+        getDriveResourceClient()
+                .delete(file)
+                .addOnSuccessListener(this,
+                        new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                showMessage(getString(R.string.file_deleted));
+                                finish();
+                            }
+                        })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "Unable to delete file", e);
+                        showMessage(getString(R.string.delete_failed));
+                        finish();
+                    }
+                });
+        // [END delete_file]
+    }
 
     // [START create_file_in_appfolder]
     private void createFileInAppFolder(final File fragment, final String filename) {

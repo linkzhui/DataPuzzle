@@ -250,7 +250,7 @@ class FragDatabase implements Serializable{
         return fragName1;
     }
 
-    public String getFrafName2() {
+    public String getFragName2() {
         return fragName2;
     }
 
