@@ -17,7 +17,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class IndividualFileDownloadActivity extends AppCompatActivity {
 
@@ -60,7 +59,7 @@ public class IndividualFileDownloadActivity extends AppCompatActivity {
                 for(DataSnapshot child:dataSnapshot.getChildren())
                 {
                     String filename = child.getKey();
-                    Log.e("book name",filename);
+                    Log.e("file name",filename);
                     list.add(filename);
                 }
                 adapter.notifyDataSetChanged();

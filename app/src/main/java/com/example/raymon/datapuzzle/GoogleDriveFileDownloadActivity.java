@@ -11,7 +11,15 @@ import android.widget.TextView;
 
 import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
+import com.google.android.gms.drive.Metadata;
+import com.google.android.gms.drive.MetadataBuffer;
 import com.google.android.gms.drive.events.OpenFileCallback;
+import com.google.android.gms.drive.query.Filters;
+import com.google.android.gms.drive.query.Query;
+import com.google.android.gms.drive.query.SearchableField;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,13 +54,39 @@ public class GoogleDriveFileDownloadActivity extends BaseActivity {
 
     @Override
     protected void onDriveClientReady() {
-
+        queryFile("file download.txt");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mExecutorService.shutdown();
+    }
+
+    private void queryFile(String filename)
+    {
+        Query query = new Query.Builder()
+                .addFilter(Filters.eq(SearchableField.TITLE, filename))
+                .build();
+        Task<MetadataBuffer> queryTask = getDriveResourceClient().query(query)
+                .addOnSuccessListener(this,
+                        new OnSuccessListener<MetadataBuffer>() {
+                            @Override
+                            public void onSuccess(MetadataBuffer metadataBuffer) {
+                                Log.i(TAG,"duplicate file detected");
+                                for(Metadata data:metadataBuffer)
+                                {
+                                    retrieveContents(data.getDriveId().asDriveFile());
+                                }
+                            }
+                        })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i(TAG, "No duplicate file detected");
+                        finish();
+                    }
+                });
     }
 
     private void retrieveContents(DriveFile file) {
