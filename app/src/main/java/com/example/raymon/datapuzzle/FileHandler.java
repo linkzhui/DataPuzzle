@@ -220,49 +220,52 @@ public class FileHandler {
 
     }
 
+    //Class used to store file's name and user's mode, then store original file's metadata into firebase database
+    class FileDatabase implements Serializable{
+        String mode;
+        String file_name;
+
+        public String getMode() {
+            return mode;
+        }
+
+        public String getFile_name() {
+            return file_name;
+        }
+
+        public FileDatabase(String mode, String file_name)
+        {
+            this.mode = mode;
+            this.file_name = file_name;
+        }
+    }
+
+    //Class used to store fragments' , then put this object into firebase database
+    class FragDatabase implements Serializable{
+        String fragName1;
+        String fragName2;
+        String fragName3;
+        public String getFragName1() {
+            return fragName1;
+        }
+
+        public String getFragName2() {
+            return fragName2;
+        }
+
+        public String getFragName3() {
+            return fragName3;
+        }
+
+
+        public FragDatabase(String fragName1, String fragName2, String fragName3)
+        {
+            this.fragName1 = fragName1;
+            this.fragName2 = fragName2;
+            this.fragName3 = fragName3;
+        }
+    }
+
 
 }
 
-class FileDatabase implements Serializable{
-    String mode;
-    String file_name;
-
-    public String getMode() {
-        return mode;
-    }
-
-    public String getFile_name() {
-        return file_name;
-    }
-
-    public FileDatabase(String mode, String file_name)
-    {
-        this.mode = mode;
-        this.file_name = file_name;
-    }
-}
-
-class FragDatabase implements Serializable{
-    String fragName1;
-    String fragName2;
-    String fragName3;
-    public String getFragName1() {
-        return fragName1;
-    }
-
-    public String getFragName2() {
-        return fragName2;
-    }
-
-    public String getFragName3() {
-        return fragName3;
-    }
-
-
-    public FragDatabase(String fragName1, String fragName2, String fragName3)
-    {
-        this.fragName1 = fragName1;
-        this.fragName2 = fragName2;
-        this.fragName3 = fragName3;
-    }
-}

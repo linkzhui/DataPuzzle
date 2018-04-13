@@ -38,8 +38,9 @@
         <activity android:name=".FileDownloadActivity" />
         <activity
             android:name=".UserModeActivity"
-            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"></activity>
-        <activity android:name=".IndividualFileDownloadActivity"></activity>
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar" />
+        <activity android:name=".IndividualFileDownloadActivity" />
+        <activity android:name=".GoogleDriveFileDownloadActivity"></activity>
     </application>
 
 </manifest>
