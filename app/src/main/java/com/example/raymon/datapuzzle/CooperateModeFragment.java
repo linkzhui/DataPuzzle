@@ -82,6 +82,7 @@ public class CooperateModeFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
+
                 Toast.makeText(getContext(),"Dec/Merge button",Toast.LENGTH_SHORT).show();
             }
         });

@@ -56,6 +56,7 @@ public class IndividualFileDownloadActivity extends AppCompatActivity {
                 mDatabase.child("users").child(username).child("files").child(fileName).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+
                         for(DataSnapshot child:dataSnapshot.child("fragments").getChildren())
                         {
                             String fragmentName = child.getValue(String.class);
@@ -86,13 +87,15 @@ public class IndividualFileDownloadActivity extends AppCompatActivity {
         mDatabase.child("users").child(username).child("files").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                long fileCount = dataSnapshot.getChildrenCount();
-                Log.e("file count",fileCount+"");
                 for(DataSnapshot child:dataSnapshot.getChildren())
                 {
                     String filename = child.getKey();
-                    Log.e("file name",filename);
-                    list.add(filename);
+                    if(child.child("mode").getValue(String.class).equals("Individual"))
+                    {
+                        Log.e("file name",filename);
+                        list.add(filename);
+                    }
+
                 }
                 adapter.notifyDataSetChanged();
             }
