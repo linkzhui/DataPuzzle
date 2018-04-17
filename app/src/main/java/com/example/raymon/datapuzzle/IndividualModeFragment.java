@@ -84,6 +84,7 @@ public class IndividualModeFragment extends Fragment {
                     //start the activity to return a list of files which are available to be downloaded by user
                     Intent intent = new Intent(getActivity(),IndividualFileDownloadActivity.class);
                     intent.putExtra("username",username);
+                    intent.putExtra("secret key",secretKeyText.getText().toString());
                     startActivity(intent);
 
                 }
@@ -111,13 +112,6 @@ public class IndividualModeFragment extends Fragment {
             if (resultData != null) {
                 uri = resultData.getData();
                 Log.i(TAG, "Uri: " + uri.toString());
-                Context applicationContext = UserModeActivity.getContextOfApplication();
-                ParcelFileDescriptor parcelFileDescriptor;
-
-
-                //convert the data from uri to BufferedInputStream to split and encrypt, BufferedInputStream have better performance in I/O read and write
-//                    parcelFileDescriptor = applicationContext.getContentResolver().openFileDescriptor(uri, "r");
-//                    FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
 
                 //result[0]: retrieve the fileName from the selected file
                 //result[1]: retrieve the fileSize from the selected file
@@ -234,24 +228,24 @@ public class IndividualModeFragment extends Fragment {
         }
     }
 
-    private class DecryptInBG extends AsyncTask<String, Void, Void>{
-        @Override
-        protected Void doInBackground(String... filename) {
-            try {
-                crypt.AESFileDecryption(filename[0]);
-            } catch (Exception e){
-                Log.e("File", e.getMessage());
-                // Caused by: java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare()
-                //Toast.makeText(getBaseContext(),e.getMessage(),Toast.LENGTH_LONG).show();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            Toast.makeText(getContext(),"Decryption completed.",Toast.LENGTH_LONG).show();
-        }
-    }
+//    private class DecryptInBG extends AsyncTask<String, Void, Void>{
+//        @Override
+//        protected Void doInBackground(String... filename) {
+//            try {
+//                crypt.AESFileDecryption(filename[0]);
+//            } catch (Exception e){
+//                Log.e("File", e.getMessage());
+//                // Caused by: java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare()
+//                //Toast.makeText(getBaseContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+//            }
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void aVoid) {
+//            Toast.makeText(getContext(),"Decryption completed.",Toast.LENGTH_LONG).show();
+//        }
+//    }
 
     /* Checks if external storage is available to at least read */
     public boolean isExternalStorageReadable() {

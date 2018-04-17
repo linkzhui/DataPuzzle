@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 /**
  * Created by Jerry on 3/21/18.
@@ -69,7 +70,7 @@ public class FileHandler {
 
         //if the mode is individual, the number of file fragment is 2
         //if the mode is cooperate, the number of file fragment is 3
-        int fragNum = mode == "individual"? 2:3;
+        int fragNum = mode.equals("individual") ? 2:3;
         File[] fragment = new File[fragNum];
         final String[] fragName = new String[fragNum];
         for (int subfileIndex = 0; subfileIndex < 2; subfileIndex++)
@@ -79,8 +80,6 @@ public class FileHandler {
             fragName[subfileIndex] = filename+"."+subfileIndex;
 
             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fragment[subfileIndex]));
-//            fileUploadInfo[subfileIndex].fragment = fragment[subfileIndex];
-//            fileUploadInfo[subfileIndex].fragName = filename+"."+subfileIndex;
             Log.i(TAG,"fragment name: "+fragment[subfileIndex]);
             Log.i(TAG,"start index: " + startIndex);
             Log.i(TAG,"end index " + endIndex);
@@ -120,7 +119,7 @@ public class FileHandler {
             {
                 case "cooperate":
 
-                    //*************unfinished block, implement XOR right there:*************
+                    //TODO: implement XOR right there:*************
 
 
 
@@ -159,14 +158,15 @@ public class FileHandler {
                                 mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).setValue(null);
                             }
                             DatabaseReference fileRef = mDatabase.child("users").child(username).child("files").child(filenameWithoutExt);
-                            FileDatabase fileDatabase = new FileDatabase(mode,filename);
-                            FragDatabase fragDatabase = new FragDatabase(fragName[0],fragName[1],"null");
+                            FileDatabase fileDatabase = new FileDatabase();
+                            fileDatabase.setMode(mode);
+                            fileDatabase.setFile_name(filename);
+                            FragDatabase fragDatabase = new FragDatabase();
+                            fragDatabase.setFragName1(fragName[0]);
+                            fragDatabase.setFragName2(fragName[1]);
+                            fragDatabase.setFragName3("null");
                             fileRef.setValue(fileDatabase);
                             fileRef.child("fragments").setValue(fragDatabase);
-//                            mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).setValue("file_extension",fileExtension);
-//                            mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).child("fragments").setValue(0,fileUploadInfo.fragName[0]);
-//                            mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).child("fragments").setValue(1,fileUploadInfo.fragName[1]);
-//                            mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).setValue("mode","individual");
                         }
 
                         @Override
@@ -179,32 +179,56 @@ public class FileHandler {
             }
         }
 
-
-
-
-//        // loop for the last chunk (which may be smaller than the chunk size)
-//        if (fileSize != chunkSize * (subfile - 1))
-//        {
-//            // open the output file
-//            BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(filename + "." + subfile));
-//            Log.i("File Split", "Entering");
-//            // write the rest of the file
-//            int b;
-//            while ((b = in.read()) != -1)
-//                out.write(b);
-//
-//            // close the file
-//            out.close();
-//        }
-
         // close the file
         in.close();
         return fileUploadInfo;
     }
 
-    public static void merge(String filename, List<String> fileList) throws IOException{
+    public Crypt.DecryptNode merge(final String origFileName, final String mode, ArrayList<File> fragments, String secretKey) throws IOException{
 
-        BufferedInputStream in = new BufferedInputStream(new FileInputStream(filename));
+
+        String TAG = "File Merge Progress";
+        Log.i(TAG,"begin file merge");
+        Log.i(TAG,"fragment 0 size: "+fragments.get(0).length());
+        Log.i(TAG,"fragment 1 size: "+fragments.get(1).length());
+        BufferedInputStream inputs[] = new BufferedInputStream[2];
+        inputs[0] = new BufferedInputStream(new FileInputStream(fragments.get(0)));
+        inputs[1] = new BufferedInputStream(new FileInputStream(fragments.get(1)));
+
+
+        File mergedFile = File.createTempFile(origFileName,".enc",context.getCacheDir());
+        BufferedOutputStream outputFile = new BufferedOutputStream(new FileOutputStream(mergedFile));
+
+        switch(mode){
+
+            case "Individual":
+                for(int i =0; i<fragments.size(); i++) {
+                    int b;
+                    while((b=inputs[i].read())!=-1)
+                    {
+                        outputFile.write(b);
+                    }
+                    inputs[i].close();
+                }
+                outputFile.close();
+                break;
+
+            case "Cooperation":
+                //TODO:cooperative mode merge
+
+
+                break;
+        }
+        Log.i(TAG,"merge file size: "+mergedFile.length()+"");
+        if(mergedFile.length()>0)
+        {
+            Log.i(TAG,"file merge successful");
+            Log.i(TAG,"merged file name: "+mergedFile.getName());
+            Log.i(TAG,"merged file size: "+mergedFile.length()+"");
+        }
+        Crypt.DecryptNode decryptNode = new Crypt.DecryptNode(origFileName,mergedFile,secretKey);
+        return decryptNode;
+
     }
 
 
@@ -221,8 +245,17 @@ public class FileHandler {
     }
 
     //Class used to store file's name and user's mode, then store original file's metadata into firebase database
-    class FileDatabase implements Serializable{
+    public static class FileDatabase implements Serializable{
         String mode;
+
+        public void setMode(String mode) {
+            this.mode = mode;
+        }
+
+        public void setFile_name(String file_name) {
+            this.file_name = file_name;
+        }
+
         String file_name;
 
         public String getMode() {
@@ -233,15 +266,14 @@ public class FileHandler {
             return file_name;
         }
 
-        public FileDatabase(String mode, String file_name)
+        public FileDatabase()
         {
-            this.mode = mode;
-            this.file_name = file_name;
+
         }
     }
 
     //Class used to store fragments' , then put this object into firebase database
-    class FragDatabase implements Serializable{
+    public static class FragDatabase implements Serializable{
         String fragName1;
         String fragName2;
         String fragName3;
@@ -258,10 +290,20 @@ public class FileHandler {
         }
 
 
-        public FragDatabase(String fragName1, String fragName2, String fragName3)
+        public FragDatabase()
         {
+
+        }
+
+        public void setFragName1(String fragName1) {
             this.fragName1 = fragName1;
+        }
+
+        public void setFragName2(String fragName2) {
             this.fragName2 = fragName2;
+        }
+
+        public void setFragName3(String fragName3) {
             this.fragName3 = fragName3;
         }
     }

@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                             //Intent myIntent = new Intent(MainActivity.this, GooDriveConnection.class);
-                            Intent myIntent = new Intent(MainActivity.this, GoogleDriveFileDownloadActivity.class);
+                            Intent myIntent = new Intent(MainActivity.this, UserModeActivity.class);
                             myIntent.putExtra("username", username);
                             startActivity(myIntent);
 

@@ -172,6 +172,10 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
                             public void onSuccess(DriveFile driveFile) {
                                 showMessage(getString(R.string.file_created,
                                         driveFile.getDriveId().encodeToString()));
+
+                                //delete the file fragment from internal storage
+//                                fragment.delete();
+
                                 finish();
                             }
                         })

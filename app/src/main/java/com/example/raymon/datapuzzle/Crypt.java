@@ -2,6 +2,7 @@ package com.example.raymon.datapuzzle;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
@@ -34,12 +35,12 @@ public class Crypt {
     public File AESFileEncrypt(CryptNode cryptNode) throws Exception{
 
         final String TAG = "File Encrypt Method";
-        //get filedescriptor and file name from cryptNode
+
+        //Get Uri from the selected file
         Uri uri = cryptNode.uri;
         String filename = cryptNode.fileName;
         Context context=UserModeActivity.getContextOfApplication();
-        // file to be encrypted
-
+        //Use contentResolver to get the content of selected file
         Context applicationContext = UserModeActivity.getContextOfApplication();
         InputStream inFile = applicationContext.getContentResolver().openInputStream(uri);
 
@@ -51,7 +52,6 @@ public class Crypt {
 
         // encrypted file
         BufferedOutputStream outFile = new BufferedOutputStream(new FileOutputStream(encryptFile));
-
 
         //**Use user's secret key input to generate secret key for cipher to encrypt/decrypt the message
         // password to encrypt the file
@@ -66,7 +66,8 @@ public class Crypt {
 
 
         //"AES/CBC/PKCS5Padding" method require 128 bits key size
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+//        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, secret);
         AlgorithmParameters params = cipher.getParameters();
 
@@ -74,11 +75,11 @@ public class Crypt {
         // secure
         // used while initializing the cipher
         // file to store the iv
-        File encryptIvFile =  File.createTempFile(filename,".iv.enc");
-        FileOutputStream ivOutFile = new FileOutputStream(encryptIvFile);
-        byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
-        ivOutFile.write(iv);
-        ivOutFile.close();
+//        File encryptIvFile =  File.createTempFile(filename,".iv.enc");
+//        FileOutputStream ivOutFile = new FileOutputStream(encryptIvFile);
+//        byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
+//        ivOutFile.write(iv);
+//        ivOutFile.close();
 
         //file encryption
         byte[] input = new byte[64];
@@ -86,6 +87,81 @@ public class Crypt {
 
         while ((bytesRead = inFile.read(input)) != -1) {
             byte[] output = cipher.update(input, 0, bytesRead);
+            if (output != null) {
+                outFile.write(output);
+            }
+        }
+
+        byte[] output = cipher.doFinal();
+        if (output != null)
+        {
+            outFile.write(output);
+        }
+
+        inFile.close();
+        outFile.flush();
+        outFile.close();
+
+        Log.i(TAG,"File Encrypted.");
+        Log.i(TAG,"Encrypt file size: "+encryptFile.length()+" byte");
+
+
+//        //Delete the Original file after the file encrypt
+//        File originalFile = new File(uri.getPath());
+//        boolean deleteOrignalFile = originalFile.delete();
+//        if(deleteOrignalFile)
+//        {
+//            Log.i(TAG,"Original file delete successful!");
+//        }
+//        else{
+//            Log.e(TAG,"Delete original file failed");
+//        }
+
+        return encryptFile;
+    }
+
+    public void AESFileDecryption (DecryptNode decryptNode) throws Exception {
+
+        String filename = decryptNode.fileName;
+        String secretKey = decryptNode.secretKey;
+        String TAG = "Decrypt progress";
+        Context context=UserModeActivity.getContextOfApplication();
+
+
+        byte[] key = secretKey.getBytes("UTF-8");
+        MessageDigest sha = MessageDigest.getInstance("SHA-1");
+        key = sha.digest(key);
+        //For the AES key size, it can be 128, 192, 256 bits. we choose 128 bits -> 16 bytes;
+        key = Arrays.copyOf(key,16);
+        SecretKey secret = new SecretKeySpec(key, "AES");
+
+
+        // file decryption
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secret);
+
+        //Read in file to descrypt
+        FileInputStream encryptFileInputStream = new FileInputStream(decryptNode.encryFile);
+        BufferedInputStream inputFile = new BufferedInputStream(encryptFileInputStream);
+
+        //create output file and store the decrypt file into external storage with its original file name
+        File decryptFolder = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS), "DataPuzzle");
+        if (!decryptFolder.mkdirs()) {
+            Log.e(TAG, "Directory not created");
+        }
+        else{
+            Log.i(TAG,"Directory created successful");
+        }
+
+        File decryptFile = new File(decryptFolder,"test.jpg");
+        BufferedOutputStream outFile = new BufferedOutputStream(new FileOutputStream(decryptFile));
+
+
+        byte[] in = new byte[64];
+        int read;
+        while ((read = inputFile.read(in)) != -1) {
+            byte[] output = cipher.update(in, 0, read);
             if (output != null)
                 outFile.write(output);
         }
@@ -93,60 +169,9 @@ public class Crypt {
         byte[] output = cipher.doFinal();
         if (output != null)
             outFile.write(output);
-
-        inFile.close();
+        inputFile.close();
         outFile.flush();
         outFile.close();
-
-        Log.i(TAG,"File Encrypted.");
-        Log.i(TAG,"encrypt file size: "+encryptFile.length()+" byte");
-        return encryptFile;
-    }
-
-    public void AESFileDecryption (String filename) throws Exception {
-
-        String password = "javapapers";
-
-        // reading the salt
-        // user should have secure mechanism to transfer the
-        // salt, iv and password to the recipient
-        FileInputStream saltFis = new FileInputStream(filename + ".salt.enc");
-        byte[] salt = new byte[8];
-        saltFis.read(salt);
-        saltFis.close();
-
-        // reading the iv
-        FileInputStream ivFis = new FileInputStream(filename + "." + "iv.enc");
-        byte[] iv = new byte[16];
-        ivFis.read(iv);
-        ivFis.close();
-
-        SecretKeyFactory factory = SecretKeyFactory
-                .getInstance("PBKDF2WithHmacSHA1");
-        KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, 65536,
-                256);
-        SecretKey tmp = factory.generateSecret(keySpec);
-        SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
-
-        // file decryption
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
-        FileInputStream fis = new FileInputStream(filename + ".encryptedfile.des");
-        FileOutputStream fos = new FileOutputStream(filename + ".decrypt");
-        byte[] in = new byte[64];
-        int read;
-        while ((read = fis.read(in)) != -1) {
-            byte[] output = cipher.update(in, 0, read);
-            if (output != null)
-                fos.write(output);
-        }
-
-        byte[] output = cipher.doFinal();
-        if (output != null)
-            fos.write(output);
-        fis.close();
-        fos.flush();
-        fos.close();
         System.out.println("File Decrypted.");
 
     }
@@ -157,11 +182,22 @@ public class Crypt {
         //string[] to store file info:
         String fileName;
         String secretKey;
-        final String TAG = "File Decrypt Method";
         public CryptNode(Uri uri, String fileName, String secretKey)
         {
             this.uri = uri;
             this.fileName = fileName;
+            this.secretKey = secretKey;
+        }
+    }
+
+    public static class DecryptNode{
+        String fileName;
+        File encryFile;
+        String secretKey;
+        public DecryptNode(String fileName, File encryFile, String secretKey)
+        {
+            this.fileName = fileName;
+            this.encryFile = encryFile;
             this.secretKey = secretKey;
         }
     }
