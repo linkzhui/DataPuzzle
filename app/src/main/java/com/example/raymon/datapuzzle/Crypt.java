@@ -55,18 +55,17 @@ public class Crypt {
 
         //**Use user's secret key input to generate secret key for cipher to encrypt/decrypt the message
         // password to encrypt the file
-        String secretKey = cryptNode.secretKey;
-        //Use SHA-1 to generate a hash from user's input key and trim the result to 256 bits (32 bytes)
-        byte[] key = secretKey.getBytes("UTF-8");
-        MessageDigest sha = MessageDigest.getInstance("SHA-1");
-        key = sha.digest(key);
+        String userKey = cryptNode.secretKey;
+        byte[] salt = new byte[8];
         //For the AES key size, it can be 128, 192, 256 bits. we choose 128 bits -> 16 bytes;
-        key = Arrays.copyOf(key,16);
-        SecretKey secret = new SecretKeySpec(key, "AES");
+        SecretKeyFactory factory = SecretKeyFactory
+                .getInstance("PBKDF2WithHmacSHA1");
+        KeySpec keySpec = new PBEKeySpec(userKey.toCharArray(), salt, 65536,
+                128);
+        SecretKey secretKey = factory.generateSecret(keySpec);
+        SecretKey secret = new SecretKeySpec(secretKey.getEncoded(), "AES");
 
-
-        //"AES/CBC/PKCS5Padding" method require 128 bits key size
-//        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        //
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, secret);
         AlgorithmParameters params = cipher.getParameters();
@@ -123,17 +122,21 @@ public class Crypt {
     public void AESFileDecryption (DecryptNode decryptNode) throws Exception {
 
         String filename = decryptNode.fileName;
-        String secretKey = decryptNode.secretKey;
         String TAG = "Decrypt progress";
         Context context=UserModeActivity.getContextOfApplication();
 
 
-        byte[] key = secretKey.getBytes("UTF-8");
-        MessageDigest sha = MessageDigest.getInstance("SHA-1");
-        key = sha.digest(key);
+        //**Use user's secret key input to generate secret key for cipher to encrypt/decrypt the message
+        // password to encrypt the file
+        String userKey = decryptNode.secretKey;
+        byte[] salt = new byte[8];
         //For the AES key size, it can be 128, 192, 256 bits. we choose 128 bits -> 16 bytes;
-        key = Arrays.copyOf(key,16);
-        SecretKey secret = new SecretKeySpec(key, "AES");
+        SecretKeyFactory factory = SecretKeyFactory
+                .getInstance("PBKDF2WithHmacSHA1");
+        KeySpec keySpec = new PBEKeySpec(userKey.toCharArray(), salt, 65536,
+                128);
+        SecretKey secretKey = factory.generateSecret(keySpec);
+        SecretKey secret = new SecretKeySpec(secretKey.getEncoded(), "AES");
 
 
         // file decryption
