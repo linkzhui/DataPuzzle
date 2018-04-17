@@ -75,8 +75,9 @@ public class FileHandler {
         final String[] fragName = new String[fragNum];
         for (int subfileIndex = 0; subfileIndex < 2; subfileIndex++)
         {
-            // Create the temp fragment file to store the result of split file
-            fragment[subfileIndex] = File.createTempFile(filename,"."+subfileIndex,context.getCacheDir());
+            // If the mode is Individual, create the temp fragment file to store the result of split file
+            // If the mode is Cooperate, create the file store in internal storage
+            fragment[subfileIndex] = mode.equals("Individual")? File.createTempFile(filename,"."+subfileIndex,context.getCacheDir()):new File(context.getFilesDir(),filename+"."+subfileIndex);
             fragName[subfileIndex] = filename+"."+subfileIndex;
 
             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fragment[subfileIndex]));
@@ -98,13 +99,6 @@ public class FileHandler {
         fileUploadInfo = new GoogleDriveFileUploadActivity.FileUploadInfo(fragment,fragName);
         int size = 0;
 
-        //******Test Purpose only*****
-//        for(int i =0;i<2;i++)
-//        {
-//            size+=fileUploadInfo.fragment[i].length();
-//            Log.i(TAG,"frgament "+i+ " size:"+fileUploadInfo.fragment[i].length());
-//            Log.i(TAG,"frgament "+i+ " name:"+fileUploadInfo.fragName[i]);
-//        }
 
         Log.i(TAG,size+"");
         //check if inputStream read reach the end of original file?
@@ -117,7 +111,7 @@ public class FileHandler {
             Log.i(TAG,"file split completed successful");
             switch (mode)
             {
-                case "cooperate":
+                case "Cooperate":
 
                     //TODO: implement XOR right there:*************
 
@@ -146,7 +140,7 @@ public class FileHandler {
                         }
                     });
                     break;
-                case "individual":
+                case "Individual":
                     Log.i(TAG,"upload the file metadata to firebase database");
                     //add the file fragment name into firebase database
                     mDatabase.child("users").child(username).child("files").addListenerForSingleValueEvent(new ValueEventListener() {

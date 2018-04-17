@@ -70,15 +70,6 @@ public class Crypt {
         cipher.init(Cipher.ENCRYPT_MODE, secret);
         AlgorithmParameters params = cipher.getParameters();
 
-        // iv adds randomness to the text and just makes the mechanism more
-        // secure
-        // used while initializing the cipher
-        // file to store the iv
-//        File encryptIvFile =  File.createTempFile(filename,".iv.enc");
-//        FileOutputStream ivOutFile = new FileOutputStream(encryptIvFile);
-//        byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
-//        ivOutFile.write(iv);
-//        ivOutFile.close();
 
         //file encryption
         byte[] input = new byte[64];
@@ -105,7 +96,7 @@ public class Crypt {
         Log.i(TAG,"Encrypt file size: "+encryptFile.length()+" byte");
 
 
-//        //Delete the Original file after the file encrypt
+        //TODO: Delete the Original file after the file encrypt, uncomment this area of code
 //        File originalFile = new File(uri.getPath());
 //        boolean deleteOrignalFile = originalFile.delete();
 //        if(deleteOrignalFile)

@@ -1,14 +1,12 @@
 package com.example.raymon.datapuzzle;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
@@ -124,7 +122,7 @@ public class IndividualModeFragment extends Fragment {
                     new EncryptInBG().execute(cryptNode).get();
 
                     FileHandler.FileHandlerInfo fileHandlerInfo = new FileHandler.FileHandlerInfo(result[0],encryptFile,username);
-                    GoogleDriveFileUploadActivity.FileUploadInfo fileUploadInfo = fileHandle.split(fileHandlerInfo,"individual");
+                    GoogleDriveFileUploadActivity.FileUploadInfo fileUploadInfo = fileHandle.split(fileHandlerInfo,"Individual");
 
                     Intent intent = new Intent(getActivity(),GoogleDriveFileUploadActivity.class);
                     Bundle bundle = new Bundle();
@@ -228,27 +226,9 @@ public class IndividualModeFragment extends Fragment {
         }
     }
 
-//    private class DecryptInBG extends AsyncTask<String, Void, Void>{
-//        @Override
-//        protected Void doInBackground(String... filename) {
-//            try {
-//                crypt.AESFileDecryption(filename[0]);
-//            } catch (Exception e){
-//                Log.e("File", e.getMessage());
-//                // Caused by: java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare()
-//                //Toast.makeText(getBaseContext(),e.getMessage(),Toast.LENGTH_LONG).show();
-//            }
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Void aVoid) {
-//            Toast.makeText(getContext(),"Decryption completed.",Toast.LENGTH_LONG).show();
-//        }
-//    }
 
     /* Checks if external storage is available to at least read */
-    public boolean isExternalStorageReadable() {
+    public static boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state) ||
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
@@ -259,7 +239,7 @@ public class IndividualModeFragment extends Fragment {
         return false;
     }
 
-    public boolean isExternalStorageWritable() {
+    public static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
 
