@@ -55,10 +55,12 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public FileFragment getFile(long id) {
+
         SQLiteDatabase db = this.getReadableDatabase();
+
         //Cursor cursor =  db.rawQuery( "select * from contacts where id="+id+"", null );
-        Cursor cursor = db.query(FileFragment.TABLE_NAME, new String[]{FileFragment.COLUMN_FileFragments_Origin,
-                FileFragment.COLUMN_FileFragments_First, FileFragment.COLUMN_FileFragments_First_Uri,FileFragment.COLUMN_FileFragments_Second, FileFragment.COLUMN_FileFragments_Second_Uri,FileFragment.COLUMN_FileFragments_Third, FileFragment.COLUMN_FileFragments_Third_Uri},
+        Cursor cursor = db.query(FileFragment.TABLE_NAME, new String[]{FileFragment.COLUMN_ID, FileFragment.COLUMN_FileFragments_Origin,
+                        FileFragment.COLUMN_FileFragments_First, FileFragment.COLUMN_FileFragments_Second, FileFragment.COLUMN_FileFragments_Third},
                 FileFragment.COLUMN_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
 
         if (cursor != null){

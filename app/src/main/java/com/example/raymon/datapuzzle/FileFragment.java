@@ -25,10 +25,6 @@ public class FileFragment {
     private String fileFragmentNameTwoUri;
     private String fileFragmentNameThreeUri;
 
-
-
-
-
     // Create table SQL query
     public static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " ("
@@ -39,7 +35,7 @@ public class FileFragment {
                     + COLUMN_FileFragments_Second + " TEXT,"
                     + COLUMN_FileFragments_Second_Uri + " TEXT,"
                     + COLUMN_FileFragments_Third + " TEXT,"
-                    + COLUMN_FileFragments_Third_Uri + " TEXT,"
+                    + COLUMN_FileFragments_Third_Uri + " TEXT"
                     + ")";
 
 
@@ -94,6 +90,31 @@ public class FileFragment {
     public void setFileFragmentNameThree(String fileFragmentNameThree){
         this.fileFragmentNameThree = fileFragmentNameThree;
     }
+
+    public String getFileFragmentNameOne() {
+        return fileFragmentNameOne;
+    }
+
+    public String getFileFragmentNameTwo() {
+        return fileFragmentNameTwo;
+    }
+
+    public String getFileFragmentNameThree() {
+        return fileFragmentNameThree;
+    }
+
+    public String getFileFragmentNameOneUri() {
+        return fileFragmentNameOneUri;
+    }
+
+    public String getFileFragmentNameTwoUri() {
+        return fileFragmentNameTwoUri;
+    }
+
+    public String getFileFragmentNameThreeUri() {
+        return fileFragmentNameThreeUri;
+    }
+
 
 
 
