@@ -1,5 +1,6 @@
 package com.example.raymon.datapuzzle;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -81,15 +82,18 @@ public class ShowFileFragmentListActivity extends AppCompatActivity {
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
                 // TODO Auto-generated method stub
-                Toast.makeText(
-                        getApplicationContext(),
-                        listDataHeader.get(groupPosition)
-                                + " : "
-                                + listDataChild.get(
-                                listDataHeader.get(groupPosition)).get(
-                                childPosition), Toast.LENGTH_SHORT)
-                        .show();
+                String origin_file_name=  listDataHeader.get(groupPosition);
+                String file_fragment_name =  listDataChild.get(
+                        listDataHeader.get(groupPosition)).get(
+                        childPosition);
+
+                Intent intent = new Intent(ShowFileFragmentListActivity.this
+                        , WiFiDirectCopActivity.class);
+                intent.putExtra("FILE_FRAGMENT_NAME", file_fragment_name);
+                startActivity(intent);
+
                 return false;
+
             }
         });
     }
