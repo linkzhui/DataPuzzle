@@ -115,6 +115,32 @@ public class FileHandler {
 
                     //TODO: implement XOR right there:*************
 
+                    fragment[2] = new File(context.getFilesDir(),filename+".XOR");
+                    fragName[2] = filename+".XOR";
+                    BufferedOutputStream xorOut = new BufferedOutputStream(new FileOutputStream(fragment[2]));
+                    BufferedInputStream inFile1 = new BufferedInputStream(new FileInputStream(fragment[0]));
+                    BufferedInputStream inFile2 = new BufferedInputStream(new FileInputStream(fragment[1]));
+                    byte[] input1 = new byte[64];
+                    byte[] input2 = new byte[64];
+                    int bytesRead1, byteRead2;
+                    while ((bytesRead1 = inFile1.read(input1)) != -1 || (byteRead2 = inFile2.read(input2)) != -1 ) {
+                        int i = 0;
+                        for(byte b: input1) {
+                            input2[i] = (byte)(b ^ input2[i++]);
+                        }
+                        if (xorOut != null) {
+                            xorOut.write(input2);
+                        }
+                    }
+                    if(bytesRead1 == -1){
+                        xorOut.write(inFile2.read());
+                    } else if(byteRead2 == -1){
+                        xorOut.write(inFile1.read());
+                    }
+
+                    inFile1.close();
+                    inFile2.close();
+                    xorOut.close();
 
 
 

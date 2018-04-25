@@ -32,7 +32,6 @@
         </activity>
         <activity android:name=".ExternalStorage" />
         <activity android:name=".QueryFileActivity" />
-        <activity android:name=".WifiTransferFileActivity" />
         <activity android:name=".GoogleDriveFileUploadActivity" />
         <activity
             android:name=".UserModeActivity"
