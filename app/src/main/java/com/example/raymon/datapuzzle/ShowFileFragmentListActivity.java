@@ -17,6 +17,7 @@ public class ShowFileFragmentListActivity extends AppCompatActivity {
     ExpandableListView expListView;
     List<String> listDataHeader;
     HashMap<String, List<String>> listDataChild;
+    HashMap<String, List<String>> listURIChild;
 
     private List<FileFragment> fileFragmentsList = new ArrayList<>();
     private DBHelper db;
@@ -87,9 +88,14 @@ public class ShowFileFragmentListActivity extends AppCompatActivity {
                         listDataHeader.get(groupPosition)).get(
                         childPosition);
 
+                String file_fragment_uri =  listURIChild.get(
+                        listDataHeader.get(groupPosition)).get(
+                        childPosition);
+
                 Intent intent = new Intent(ShowFileFragmentListActivity.this
                         , WiFiDirectCopActivity.class);
                 intent.putExtra("FILE_FRAGMENT_NAME", file_fragment_name);
+                intent.putExtra("FILE_FRAGMENT_URI", file_fragment_uri);
                 startActivity(intent);
 
                 return false;
@@ -102,20 +108,32 @@ public class ShowFileFragmentListActivity extends AppCompatActivity {
 
         listDataHeader = new ArrayList<String>();
         listDataChild = new HashMap<String, List<String>>();
+        listURIChild = new HashMap<String, List<String>>();
 
         // Adding child data
         db = new DBHelper(this);
         List<FileFragment> fileFragmentsList = new ArrayList<>();
+
         fileFragmentsList.addAll(db.getAllFiles());
 
         for(int i = 0; i < fileFragmentsList.size(); i++){
             String fileOriginName = fileFragmentsList.get(i).getFileOriginName();
             listDataHeader.add(fileOriginName);
+
             List<String> childList = new ArrayList<>();
+            List<String> URIList = new ArrayList<>();
+
             childList.add(fileFragmentsList.get(i).getFileFragmentNameOne());
             childList.add(fileFragmentsList.get(i).getFileFragmentNameTwo());
             childList.add(fileFragmentsList.get(i).getFileFragmentNameThree());
+
+            // add file fragment URI
+            URIList.add(fileFragmentsList.get(i).getFileFragmentNameOneUri());
+            URIList.add(fileFragmentsList.get(i).getFileFragmentNameTwoUri());
+            URIList.add(fileFragmentsList.get(i).getFileFragmentNameThreeUri());
+
             listDataChild.put(fileOriginName, childList);
+            listURIChild.put(fileOriginName,URIList);
         }
 
     }
