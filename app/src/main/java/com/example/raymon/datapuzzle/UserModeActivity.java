@@ -117,13 +117,13 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
                     individualModeFragment.setArguments(bundle);
                     return individualModeFragment;
 
-                case 1:
+                //case 1:
                     // return cooperate mode to the user
                     // The other sections of the app are dummy placeholders.
                     //Pass the username from User Mode Activity to cooperate mode fragment using bundle
-                    CooperateModeFragment cooperateModeFragment = new CooperateModeFragment();
-                    cooperateModeFragment.setArguments(bundle);
-                    return cooperateModeFragment;
+                    //CooperateModeFragment cooperateModeFragment = new CooperateModeFragment();
+                    //cooperateModeFragment.setArguments(bundle);
+                    //return cooperateModeFragment;
 
             }
         }

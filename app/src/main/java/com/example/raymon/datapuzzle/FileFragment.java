@@ -43,18 +43,6 @@ public class FileFragment {
 
     }
 
-    public void setFileFragmentNameOneUri(String fileFragmentNameOneUri) {
-        this.fileFragmentNameOneUri = fileFragmentNameOneUri;
-    }
-
-    public void setFileFragmentNameTwoUri(String fileFragmentNameTwoUri) {
-        this.fileFragmentNameTwoUri = fileFragmentNameTwoUri;
-    }
-
-    public void setFileFragmentNameThreeUri(String fileFragmentNameThreeUri) {
-        this.fileFragmentNameThreeUri = fileFragmentNameThreeUri;
-    }
-
     public FileFragment(int id, String fileFragmentsOrigin, String fileFragmentsFirst, String fileFragmentsFirstUri, String fileFragmentsSecond, String fileFragmentsSecondUri, String fileFragmentsThird, String fileFragmentsThirdUri) {
         this.id = id;
         this.fileOriginName = fileFragmentsOrigin;
@@ -65,14 +53,6 @@ public class FileFragment {
         this.fileFragmentNameTwoUri = fileFragmentsSecondUri;
         this.fileFragmentNameThree = fileFragmentsThird;
         this.fileFragmentNameThreeUri = fileFragmentsThirdUri;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String FileOriginName() {
-        return fileOriginName;
     }
 
     public void setFileOriginName(String fileOriginName){
@@ -89,6 +69,18 @@ public class FileFragment {
 
     public void setFileFragmentNameThree(String fileFragmentNameThree){
         this.fileFragmentNameThree = fileFragmentNameThree;
+    }
+
+    public void setFileFragmentNameOneUri(String fileFragmentNameOneUri) {
+        this.fileFragmentNameOneUri = fileFragmentNameOneUri;
+    }
+
+    public void setFileFragmentNameTwoUri(String fileFragmentNameTwoUri) {
+        this.fileFragmentNameTwoUri = fileFragmentNameTwoUri;
+    }
+
+    public void setFileFragmentNameThreeUri(String fileFragmentNameThreeUri) {
+        this.fileFragmentNameThreeUri = fileFragmentNameThreeUri;
     }
 
     public String getFileFragmentNameOne() {
@@ -114,6 +106,10 @@ public class FileFragment {
     public String getFileFragmentNameThreeUri() {
         return fileFragmentNameThreeUri;
     }
+
+    public int getId() { return id; }
+
+    public String getFileOriginName() { return fileOriginName;}
 
 
 

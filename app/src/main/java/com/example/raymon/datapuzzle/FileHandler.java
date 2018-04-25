@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.raymon.datapuzzle.DBHelper;
 /**
  * Created by Jerry on 3/21/18.
  */
@@ -33,6 +35,8 @@ public class FileHandler {
     private Context context = UserModeActivity.getContextOfApplication();
     private DatabaseReference mDatabase;
     private String TAG = "File Handler";
+    private DBHelper SQLiteDatabase = new DBHelper(context);
+
     public GoogleDriveFileUploadActivity.FileUploadInfo split(FileHandlerInfo fileHandlerInfo, final String mode) throws IOException
     {
 
@@ -45,6 +49,7 @@ public class FileHandler {
 
         //Get the Google firebase database instance
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
         //Get the account username
         final String username = fileHandlerInfo.username;
 
@@ -100,6 +105,7 @@ public class FileHandler {
         int size = 0;
 
 
+
         Log.i(TAG,size+"");
         //check if inputStream read reach the end of original file?
         //in.read() = -1, inputstream read reach the end of the original file
@@ -143,6 +149,12 @@ public class FileHandler {
                     xorOut.close();
 
 
+                    // Insert fileFragment into the database
+                    String[] filePaths = new String[3];
+                    for(int i = 0; i < fragNum; i++){
+                        filePaths[i]  = fragment[i].getAbsolutePath();
+                    }
+                    createFileFragment(filenameWithoutExt,fragName[0], filePaths[0], fragName[1],filePaths[1], fragName[2],filePaths[2]);
 
                     //add the file fragment name into firebase database
                     mDatabase.child("users").child(username).child("files").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -326,6 +338,11 @@ public class FileHandler {
         public void setFragName3(String fragName3) {
             this.fragName3 = fragName3;
         }
+    }
+
+    public void createFileFragment(String fileFragmentsOrigin, String fileFragmentsFirst, String fileFragmentsFirstUri, String fileFragmentsSecond,String fileFragmentsSecondUri ,String fileFragmentsThird, String fileFragmentsThirdUri){
+        long id = SQLiteDatabase.insertFileFragments(fileFragmentsOrigin,fileFragmentsFirst,fileFragmentsFirstUri,fileFragmentsSecond,fileFragmentsSecondUri, fileFragmentsThird, fileFragmentsThirdUri );
+        FileFragment n = SQLiteDatabase.getFile(id);
     }
 
 
