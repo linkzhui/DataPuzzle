@@ -41,6 +41,10 @@
         <activity android:name=".CooperateFileDownloadActivity"></activity>
         <activity android:name=".ShowFileFragmentListActivity"></activity>
         <activity android:name=".WiFiDirectCopActivity"></activity>
+
+        <service android:enabled="true" android:name=".FileTransferService" />
+
+
     </application>
 
 </manifest>
