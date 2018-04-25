@@ -8,13 +8,13 @@ public class FileFragment {
 
     public static final String TABLE_NAME = "FileFragments";
     public static final String COLUMN_ID = "id";
-    public static final String COLUMN_FileFragments_Origin = "Origin File";
-    public static final String COLUMN_FileFragments_First = "File Fragment 1";
-    public static final String COLUMN_FileFragments_First_Uri = "File Fragment 1 Uri";
-    public static final String COLUMN_FileFragments_Second = "File Fragment 2";
-    public static final String COLUMN_FileFragments_Second_Uri = "File Fragment 2 Uri";
-    public static final String COLUMN_FileFragments_Third = "File Fragment 3";
-    public static final String COLUMN_FileFragments_Third_Uri = "File Fragment 3 Uri";
+    public static final String COLUMN_FileFragments_Origin = "Origin_File";
+    public static final String COLUMN_FileFragments_First = "File_Fragment_1";
+    public static final String COLUMN_FileFragments_First_Uri = "File_Fragment_1_Uri";
+    public static final String COLUMN_FileFragments_Second = "File_Fragment_2";
+    public static final String COLUMN_FileFragments_Second_Uri = "File_Fragment_2_Uri";
+    public static final String COLUMN_FileFragments_Third = "File_Fragment_3";
+    public static final String COLUMN_FileFragments_Third_Uri = "File_Fragment_3_Uri";
 
     private int id;
     private String fileOriginName;

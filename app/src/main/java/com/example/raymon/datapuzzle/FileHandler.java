@@ -35,7 +35,7 @@ public class FileHandler {
     private Context context = UserModeActivity.getContextOfApplication();
     private DatabaseReference mDatabase;
     private String TAG = "File Handler";
-    private DBHelper SQLiteDatabase = new DBHelper(context);
+
 
     public GoogleDriveFileUploadActivity.FileUploadInfo split(FileHandlerInfo fileHandlerInfo, final String mode) throws IOException
     {
@@ -84,7 +84,6 @@ public class FileHandler {
             // If the mode is Cooperate, create the file store in internal storage
             fragment[subfileIndex] = mode.equals("Individual")? File.createTempFile(filename,"."+subfileIndex,context.getCacheDir()):new File(context.getFilesDir(),filename+"."+subfileIndex);
             fragName[subfileIndex] = filename+"."+subfileIndex;
-
             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fragment[subfileIndex]));
             Log.i(TAG,"fragment name: "+fragment[subfileIndex]);
             Log.i(TAG,"start index: " + startIndex);
@@ -149,10 +148,10 @@ public class FileHandler {
                     xorOut.close();
 
 
-                    // Insert fileFragment into the database
+                    // Insert fileFragment into the SQLite
                     String[] filePaths = new String[3];
                     for(int i = 0; i < fragNum; i++){
-                        filePaths[i]  = fragment[i].getAbsolutePath();
+                        filePaths[i]  = fragment[i].toURI().toString();
                     }
                     createFileFragment(filenameWithoutExt,fragName[0], filePaths[0], fragName[1],filePaths[1], fragName[2],filePaths[2]);
 
@@ -341,8 +340,10 @@ public class FileHandler {
     }
 
     public void createFileFragment(String fileFragmentsOrigin, String fileFragmentsFirst, String fileFragmentsFirstUri, String fileFragmentsSecond,String fileFragmentsSecondUri ,String fileFragmentsThird, String fileFragmentsThirdUri){
-        long id = SQLiteDatabase.insertFileFragments(fileFragmentsOrigin,fileFragmentsFirst,fileFragmentsFirstUri,fileFragmentsSecond,fileFragmentsSecondUri, fileFragmentsThird, fileFragmentsThirdUri );
-        FileFragment n = SQLiteDatabase.getFile(id);
+        DBHelper db = new DBHelper(context);
+        long id = db.insertFileFragments(fileFragmentsOrigin,fileFragmentsFirst,fileFragmentsFirstUri,fileFragmentsSecond,fileFragmentsSecondUri, fileFragmentsThird, fileFragmentsThirdUri );
+        //FileFragment n = SQLiteDatabase.getFile(id);
+
     }
 
 

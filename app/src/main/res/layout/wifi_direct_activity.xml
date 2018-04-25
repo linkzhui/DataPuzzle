@@ -23,7 +23,7 @@
             android:id = "@+id/bt_direct_enable" />
 
         <fragment
-            class="com.example.yeizz.datapuzzle_cop.DeviceListFragment"
+            class="com.example.raymon.datapuzzle.DeviceListFragment"
             android:id="@+id/frag_list"
             android:layout_width="match_parent"
             android:layout_height="200dp">
@@ -31,7 +31,7 @@
         </fragment>
 
         <fragment
-            class="com.example.yeizz.datapuzzle_cop.DeviceDetailFragment"
+            class="com.example.raymon.datapuzzle.DeviceDetailFragment"
             android:id="@+id/frag_detail"
             android:layout_width="match_parent"
             android:layout_height="match_parent">

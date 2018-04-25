@@ -39,6 +39,8 @@
         <activity android:name=".IndividualFileDownloadActivity" />
         <activity android:name=".GoogleDriveFileDownloadActivity" />
         <activity android:name=".CooperateFileDownloadActivity"></activity>
+        <activity android:name=".ShowFileFragmentListActivity"></activity>
+        <activity android:name=".WiFiDirectCopActivity"></activity>
     </application>
 
 </manifest>
