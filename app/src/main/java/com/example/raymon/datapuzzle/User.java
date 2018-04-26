@@ -41,4 +41,8 @@ public class User {
         this.password = password;
         this.time = timeStamp;
     }
+
+    public static void logoutUser(){
+        UserModeActivity.username = "";
+    }
 }

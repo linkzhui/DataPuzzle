@@ -166,6 +166,7 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
             default:
                 Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                 startActivity(intent);
+                User.logoutUser();
                 Toast.makeText(this, "Logout successful", Toast.LENGTH_SHORT).show();
         }
         return true;
