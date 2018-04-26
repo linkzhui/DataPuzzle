@@ -164,11 +164,16 @@ public class FileHandler {
                                 //delete exist file fragment from the file list
                                 mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).setValue(null);
                             }
-                            mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).setValue("file_extension",fileExtension);
-                            mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).child("fragments").setValue(0,fileUploadInfo.fragName[0]);
-                            mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).child("fragments").setValue(1,fileUploadInfo.fragName[1]);
-                            mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).child("fragments").setValue(2,fileUploadInfo.fragName[2]);
-                            mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).setValue("mode",mode);
+                            DatabaseReference fileRef = mDatabase.child("users").child(username).child("files").child(filenameWithoutExt);
+                            FragDatabase fragDatabase = new FragDatabase();
+                            fragDatabase.setFragName1(fragName[0]);
+                            fragDatabase.setFragName2(fragName[1]);
+                            fragDatabase.setFragName3(fragName[2]);
+                            FileDatabase fileDatabase = new FileDatabase();
+                            fileDatabase.setMode(mode);
+                            fileDatabase.setFile_name(filename);
+                            fileRef.setValue(fileDatabase);
+                            fileRef.child("fragments").setValue(fragDatabase);
                         }
 
                         @Override

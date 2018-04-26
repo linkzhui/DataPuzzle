@@ -27,7 +27,7 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
     private String username;
     private ArrayAdapter<String> adapter;
     private ArrayList<String> fragNameArray = new ArrayList<>();
-    private String TAG = "Individual File Download Activity";
+    private String TAG = "Cooper Mode File Merge/Decry Activity";
     private String secretkey;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +66,14 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                         }
                         String originalFileName = dataSnapshot.child("file_name").getValue(String.class);
                         //TODO: 1.search internal file dir and external file dir
+                        if(internalFileSearch(fragNameArray.get(0)) || externalFileSearch(fragNameArray.get(0)))
+                        {
+                            Log.i(TAG,fragNameArray.get(0)+"is founded");
 
-
+                        }else{
+                            Log.i(TAG,fragNameArray.get(0)+"is not founded");
+                            Toast.makeText(getApplicationContext(),fragNameArray.get(0)+"is not founded",Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
@@ -75,7 +81,6 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
 
                     }
                 });
-
             }
         });
     }
@@ -121,12 +126,17 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
         //search the file fragment is existed in the external storage or not?
         File decryptFolder = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS), "DataPuzzle");
-        if(decryptFolder.isDirectory()&&decryptFolder.exists())
+        if(decryptFolder.exists() && decryptFolder.isDirectory())
         {
-            return true;
+            File myFile = new File(decryptFolder.getAbsoluteFile()+"/"+fname);
+            if(myFile.exists())
+            {
+                return true;
+            }
+
         }
-        else{
-            return false;
-        }
+
+        return false;
+
     }
 }
