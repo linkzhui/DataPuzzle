@@ -26,7 +26,7 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
     private static final int READ_REQUEST_CODE = 42;
     final String TAG = "UserModeActivity";
     AppSectionsPagerAdapter mAppSectionsPagerAdapter;
-    private String username;
+    public static String username;
     ViewPager mViewPager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

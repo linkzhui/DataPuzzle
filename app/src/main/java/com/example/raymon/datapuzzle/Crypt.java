@@ -1,6 +1,7 @@
 package com.example.raymon.datapuzzle;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -138,35 +139,50 @@ public class Crypt {
         FileInputStream encryptFileInputStream = new FileInputStream(decryptNode.encryFile);
         BufferedInputStream inputFile = new BufferedInputStream(encryptFileInputStream);
 
-        //create output file and store the decrypt file into external storage with its original file name
-        File decryptFolder = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS), "DataPuzzle");
-        if (!decryptFolder.mkdirs()) {
-            Log.e(TAG, "Directory not created");
-        }
-        else{
-            Log.i(TAG,"Directory created successful");
-        }
+        //check if external storage is available for read and write
+        String state = Environment.getExternalStorageState();
+        if(Environment.MEDIA_MOUNTED.equals(state))
+        {
+            Log.i(TAG,"external storage file write permission gained");
+            //create output file and store the decrypt file into external storage with its original file name
+            File decryptFolder = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS), "DataPuzzle");
+            if (!decryptFolder.mkdirs()) {
+                Log.e(TAG, "Directory not created");
+            }
+            else{
+                Log.i(TAG,"Directory created successful");
+            }
 
-        File decryptFile = new File(decryptFolder,"test.jpg");
-        BufferedOutputStream outFile = new BufferedOutputStream(new FileOutputStream(decryptFile));
+            File decryptFile = new File(decryptFolder,filename);
+            BufferedOutputStream outFile = new BufferedOutputStream(new FileOutputStream(decryptFile));
 
 
-        byte[] in = new byte[64];
-        int read;
-        while ((read = inputFile.read(in)) != -1) {
-            byte[] output = cipher.update(in, 0, read);
+            byte[] in = new byte[64];
+            int read;
+            while ((read = inputFile.read(in)) != -1) {
+                byte[] output = cipher.update(in, 0, read);
+                if (output != null)
+                    outFile.write(output);
+            }
+
+            byte[] output = cipher.doFinal();
             if (output != null)
                 outFile.write(output);
+            inputFile.close();
+            outFile.flush();
+            outFile.close();
+            System.out.println("File Decrypted.");
+
+            Intent myIntent = new Intent(context, UserModeActivity.class);
+            myIntent.putExtra("username", UserModeActivity.username);
+            context.startActivity(myIntent);
+        }
+        else{
+            Log.e(TAG,"external storage write permission failed");
         }
 
-        byte[] output = cipher.doFinal();
-        if (output != null)
-            outFile.write(output);
-        inputFile.close();
-        outFile.flush();
-        outFile.close();
-        System.out.println("File Decrypted.");
+
 
     }
 

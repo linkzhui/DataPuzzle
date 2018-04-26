@@ -75,7 +75,7 @@ public class FileHandler {
 
         //if the mode is individual, the number of file fragment is 2
         //if the mode is cooperate, the number of file fragment is 3
-        int fragNum = mode.equals("individual") ? 2:3;
+        int fragNum = mode.equals("Individual") ? 2:3;
         File[] fragment = new File[fragNum];
         final String[] fragName = new String[fragNum];
         for (int subfileIndex = 0; subfileIndex < 2; subfileIndex++)
@@ -168,7 +168,7 @@ public class FileHandler {
                             mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).child("fragments").setValue(0,fileUploadInfo.fragName[0]);
                             mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).child("fragments").setValue(1,fileUploadInfo.fragName[1]);
                             mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).child("fragments").setValue(2,fileUploadInfo.fragName[2]);
-                            mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).setValue("mode","cooperate");
+                            mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).setValue("mode",mode);
                         }
 
                         @Override

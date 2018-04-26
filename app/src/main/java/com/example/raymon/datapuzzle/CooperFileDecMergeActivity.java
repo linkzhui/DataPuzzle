@@ -1,7 +1,7 @@
 package com.example.raymon.datapuzzle;
 
 import android.content.Intent;
-import android.nfc.Tag;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,9 +17,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
 import java.util.ArrayList;
 
-public class IndividualFileDownloadActivity extends AppCompatActivity {
+public class CooperFileDecMergeActivity extends AppCompatActivity {
 
     private ListView listView;
     private DatabaseReference mDatabase;
@@ -31,7 +32,7 @@ public class IndividualFileDownloadActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_individual_file_download);
+        setContentView(R.layout.activity_cooper_file_dec_merge);
         //Get the username
         Intent intent = getIntent();
         username = intent.getStringExtra("username");
@@ -60,15 +61,12 @@ public class IndividualFileDownloadActivity extends AppCompatActivity {
                         for(DataSnapshot child:dataSnapshot.child("fragments").getChildren())
                         {
                             String fragmentName = child.getValue(String.class);
-                            Log.e(TAG,"fragment name: "+fragmentName);
+                            Log.i(TAG,"fragment name: "+fragmentName);
                             fragNameArray.add(fragmentName);
                         }
                         String originalFileName = dataSnapshot.child("file_name").getValue(String.class);
-                        Intent FileDownloadIntent = new Intent(getBaseContext(),GoogleDriveFileDownloadActivity.class);
-                        FileDownloadIntent.putStringArrayListExtra("fragment name",fragNameArray);
-                        FileDownloadIntent.putExtra("file name",originalFileName);
-                        FileDownloadIntent.putExtra("secret key",secretkey);
-                        startActivity(FileDownloadIntent);
+                        //TODO: 1.search internal file dir and external file dir
+
 
                     }
 
@@ -91,7 +89,7 @@ public class IndividualFileDownloadActivity extends AppCompatActivity {
                 {
                     String filename = child.getKey();
                     String mode = child.child("mode").getValue(String.class);
-                    if(mode.equals("Individual") || mode.equals("individual"))
+                    if(mode.equals("Cooperate") || mode.equals("individual"))
                     {
                         Log.e("file name",filename);
                         list.add(filename);
@@ -107,5 +105,28 @@ public class IndividualFileDownloadActivity extends AppCompatActivity {
             }
         });
         return;
+    }
+
+    private boolean internalFileSearch(String fname)
+    {
+        //search the file fragment is existed in the internal storage or not?
+        File file = getBaseContext().getFileStreamPath(fname);
+        boolean searchResult =  file.exists();
+        Log.i(TAG,fname + "existed in the internal storage? " +searchResult);
+        return searchResult;
+    }
+
+    private boolean externalFileSearch(String fname)
+    {
+        //search the file fragment is existed in the external storage or not?
+        File decryptFolder = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS), "DataPuzzle");
+        if(decryptFolder.isDirectory()&&decryptFolder.exists())
+        {
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }

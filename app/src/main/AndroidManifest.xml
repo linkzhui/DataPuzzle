@@ -31,18 +31,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".MainActivity">
 
-             <!--<intent-filter>-->
-             <!--<action android:name="android.intent.action.MAIN" />-->
-             <!--<category android:name="android.intent.category.LAUNCHER" />-->
-             <!--</intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity android:name=".ExternalStorage" />
         <activity android:name=".QueryFileActivity" />
         <activity android:name=".GoogleDriveFileUploadActivity" />
-
         <activity
             android:name=".UserModeActivity"
             android:theme="@android:style/Theme.Holo.Light.DarkActionBar" />
@@ -55,6 +53,8 @@
         <service
             android:name=".FileTransferService"
             android:enabled="true" />
+
+        <activity android:name=".CooperFileDecMergeActivity"></activity>
     </application>
 
 </manifest>
