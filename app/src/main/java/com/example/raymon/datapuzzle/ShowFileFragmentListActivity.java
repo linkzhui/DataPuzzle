@@ -1,6 +1,8 @@
 package com.example.raymon.datapuzzle;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -22,11 +24,19 @@ public class ShowFileFragmentListActivity extends AppCompatActivity {
     private List<FileFragment> fileFragmentsList = new ArrayList<>();
     private DBHelper db;
 
+    String mode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_file_fragment_list);
 
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            mode = extras.getString("mode");
+        }
+
+
+        setContentView(R.layout.activity_show_file_fragment_list);
 
         // preparing list data
         prepareListData();
@@ -92,11 +102,11 @@ public class ShowFileFragmentListActivity extends AppCompatActivity {
                         listDataHeader.get(groupPosition)).get(
                         childPosition);
 
-                Intent intent = new Intent(ShowFileFragmentListActivity.this
-                        , WiFiDirectCopActivity.class);
-                intent.putExtra("FILE_FRAGMENT_NAME", file_fragment_name);
-                intent.putExtra("FILE_FRAGMENT_URI", file_fragment_uri);
-                startActivity(intent);
+
+                Intent resultintent = new Intent();
+                resultintent.setData(Uri.parse(file_fragment_uri));
+                setResult(Activity.RESULT_OK, resultintent);
+                finish();
 
                 return false;
 

@@ -7,8 +7,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,6 +68,8 @@ public class FileTransferService extends IntentService {
                 }
                 DeviceDetailFragment.copyFile(is, stream);
                 Log.d(WiFiDirectCopActivity.TAG, "Client: Data written");
+                // delte file from internal storage
+                //deltefile(fileUri);
             } catch (IOException e) {
                 Log.e(WiFiDirectCopActivity.TAG, e.getMessage());
             } finally {
@@ -83,4 +87,13 @@ public class FileTransferService extends IntentService {
 
         }
     }
+
+    // delete file after succefully transit
+    public void deltefile(String fileUri){
+        Uri myUri = Uri.parse(fileUri);
+        File toDelteFile = new File(myUri.getPath());
+        toDelteFile.delete();
+
+    }
+
 }

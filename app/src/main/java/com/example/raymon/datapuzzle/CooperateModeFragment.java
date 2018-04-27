@@ -32,13 +32,15 @@ public class CooperateModeFragment extends Fragment {
     private Button mbuttonSplitEnc;
     private Button mbuttonDecMerge;
     private Button mbuttonWifiDirect;
+    //private Button mbuttonReceiver;
+
     private EditText secretKeyText;
     private String username;
     private Crypt crypt = new Crypt();
     private String TAG = "Cooperate Mode Fragment";
     private File encryptFile;
     private FileHandler fileHandle = new FileHandler();
-    private DBHelper SQLiteDatabase = new DBHelper(getActivity());
+    //private DBHelper SQLiteDatabase = new DBHelper(getActivity());
 
     public CooperateModeFragment() {
         // Required empty public constructor
@@ -56,7 +58,9 @@ public class CooperateModeFragment extends Fragment {
         mbuttonSplitEnc = fragment_view.findViewById(R.id.buttonSplitEnc);
         mbuttonDecMerge = fragment_view.findViewById(R.id.buttonDecMerge);
         mbuttonWifiDirect = fragment_view.findViewById(R.id.buttonWifiDirect);
+        //mbuttonReceiver = fragment_view.findViewById(R.id.buttonReceiver);
         secretKeyText = fragment_view.findViewById(R.id.secretKeyText);
+
         mbuttonSplitEnc.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -91,11 +95,24 @@ public class CooperateModeFragment extends Fragment {
         mbuttonWifiDirect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),ShowFileFragmentListActivity.class);
-                intent.putExtra("username",username);
+                String EXTRA_MESSAGE_MODE = "owner_sender";
+                Intent intent = new Intent(getActivity(),WiFiDirectCopActivity.class);
+                //intent.putExtra("mode",EXTRA_MESSAGE_MODE);
                 startActivity(intent);
             }
         });
+        /***
+        mbuttonReceiver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String EXTRA_MESSAGE_MODE = "receiver";
+                Intent intent = new Intent(getActivity(),WiFiDirectCopActivity.class);
+                intent.putExtra("mode",EXTRA_MESSAGE_MODE);
+                startActivity(intent);
+
+            }
+        });
+         ***/
 
         return fragment_view;
     }

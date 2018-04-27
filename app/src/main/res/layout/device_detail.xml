@@ -25,11 +25,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/disconnect_peer_button" />
+
+            <CheckBox
+                android:id="@+id/checkbox_owner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="owner?" />
+
             <Button
                 android:id="@+id/btn_start_client"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="transfer file"
+                android:text="select file"
                 android:visibility="gone" />
         </LinearLayout>
         <TextView

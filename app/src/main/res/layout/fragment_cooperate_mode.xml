@@ -69,6 +69,8 @@
             android:text="Wifi Direct Transfer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/buttonDecMerge" />
+
+
     </android.support.constraint.ConstraintLayout>
 
 </FrameLayout>

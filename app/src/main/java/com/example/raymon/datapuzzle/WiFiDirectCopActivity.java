@@ -56,6 +56,7 @@ public class WiFiDirectCopActivity extends Activity implements ChannelListener, 
 
     String fileFragmentName;
     String fileFragmentUri;
+    String mode;
 
     /**
      * @param isWifiP2pEnabled the isWifiP2pEnabled to set
@@ -73,9 +74,9 @@ public class WiFiDirectCopActivity extends Activity implements ChannelListener, 
         // to receive filename and uri from FileFragmentListActivity
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            fileFragmentName = extras.getString("FILE_FRAGMENT_NAME");
-            fileFragmentUri = extras.getString("FILE_FRAGMENT_URI");
-
+            //mode = extras.getString("mode");
+                fileFragmentName = extras.getString("FILE_FRAGMENT_NAME");
+                fileFragmentUri = extras.getString("FILE_FRAGMENT_URI");
         }
 
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -116,6 +117,7 @@ public class WiFiDirectCopActivity extends Activity implements ChannelListener, 
                 final DeviceListFragment fragment = (DeviceListFragment) getFragmentManager()
                         .findFragmentById(R.id.frag_list);
                 fragment.onInitiateDiscovery();
+                //call wifi maneger to discover peers
                 manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
 
                     @Override
@@ -178,13 +180,23 @@ public class WiFiDirectCopActivity extends Activity implements ChannelListener, 
         DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager()
                 .findFragmentById(R.id.frag_detail);
         fragment.showDetails(device);
-        fragment.getFileName(fileFragmentName, fileFragmentUri);
-
+        fragment.getInfo(fileFragmentName, fileFragmentUri, mode);
 
     }
 
     @Override
     public void connect(WifiP2pConfig config) {
+        //user who click connect button would be the client and send file
+        config.groupOwnerIntent = 2;
+        /**
+        if (mode.equals("receiver")){
+            // I want this device to become the owner
+            config.groupOwnerIntent = 15;
+        }else if (mode.equals("owner_sender")){
+            //set the role as the client not group owner
+            config.groupOwnerIntent = 2;
+        }
+         **/
         manager.connect(channel, config, new ActionListener() {
 
             @Override
