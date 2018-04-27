@@ -82,7 +82,7 @@ public class FileHandler {
         {
             // If the mode is Individual, create the temp fragment file to store the result of split file
             // If the mode is Cooperate, create the file store in internal storage
-            fragment[subfileIndex] = mode.equals("Individual")? new File(context.getFilesDir(), filename+"."+subfileIndex):new File(context.getFilesDir(),filename+"."+subfileIndex);
+            fragment[subfileIndex] = mode.equals("Individual")?  File.createTempFile("", filename+"."+subfileIndex,context.getCacheDir()):new File(context.getFilesDir(),filename+"."+subfileIndex);
             fragName[subfileIndex] = filename+"."+subfileIndex;
             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fragment[subfileIndex]));
             Log.i(TAG,"fragment name: "+fragment[subfileIndex]);
@@ -112,7 +112,7 @@ public class FileHandler {
             Log.e("File Split", "File split not completed.");
         }
         else{
-
+            in.close();
             Log.i(TAG,"file split completed successful");
             switch (mode)
             {
@@ -125,14 +125,25 @@ public class FileHandler {
                     BufferedOutputStream xorOut = new BufferedOutputStream(new FileOutputStream(fragment[2]));
                     BufferedInputStream inFile1 = new BufferedInputStream(new FileInputStream(fragment[0]));
                     BufferedInputStream inFile2 = new BufferedInputStream(new FileInputStream(fragment[1]));
-                    byte[] input1 = new byte[64];
-                    byte[] input2 = new byte[64];
+//                    byte[] input1 = new byte[64];
+//                    byte[] input2 = new byte[64];
                     int bytesRead1, byteRead2;
-                    while ((bytesRead1 = inFile1.read(input1)) != -1 && (byteRead2 =inFile2.read(input2)) != -1 ) {
-                        for(int i = 0;i<Math.min(bytesRead1,byteRead2);i++) {
-                            xorOut.write(input1[i]^input2[i]);
-                        }
+                    int j = 0;
+                    for (;j < Math.min(fragment[0].length(),fragment[1].length()); j++)
+                    {
+                        // load one byte from the input file and write it to the output file
+                        xorOut.write(inFile1.read()^inFile2.read());
                     }
+                    while(j<fragment[1].length())
+                    {
+                        xorOut.write(0^inFile2.read());
+                        j++;
+                    }
+//                    while ((bytesRead1 = inFile1.read(input1)) != -1 && (byteRead2 =inFile2.read(input2)) != -1 ) {
+//                        for(int i = 0;i<Math.min(bytesRead1,byteRead2);i++) {
+//                            xorOut.write(input1[i]^input2[i]);
+//                        }
+//                    }
 //                    if(bytesRead1 == -1){
 //                        xorOut.write(inFile2.read());
 //                    } else if(byteRead2 == -1){
@@ -217,7 +228,6 @@ public class FileHandler {
         }
 
         // close the file
-        in.close();
         return fileUploadInfo;
     }
 

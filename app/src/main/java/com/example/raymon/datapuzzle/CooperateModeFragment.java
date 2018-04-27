@@ -132,11 +132,11 @@ public class CooperateModeFragment extends Fragment {
                     FileHandler.FileHandlerInfo fileHandlerInfo = new FileHandler.FileHandlerInfo(result[0],encryptFile,username);
                     GoogleDriveFileUploadActivity.FileUploadInfo fileUploadInfo = fileHandle.split(fileHandlerInfo,"Cooperate");
 
-                    Intent intent = new Intent(getActivity(),GoogleDriveFileUploadActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("fragment_info",fileUploadInfo);
-                    intent.putExtras(bundle);
-                    startActivityForResult(intent,1);
+//                    Intent intent = new Intent(getActivity(),GoogleDriveFileUploadActivity.class);
+//                    Bundle bundle = new Bundle();
+//                    bundle.putSerializable("fragment_info",fileUploadInfo);
+//                    intent.putExtras(bundle);
+//                    startActivityForResult(intent,1);
 
                 } catch (Exception e){
                     Log.e("File", e.getMessage()+"");
