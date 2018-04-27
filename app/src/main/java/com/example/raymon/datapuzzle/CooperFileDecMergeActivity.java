@@ -19,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class CooperFileDecMergeActivity extends AppCompatActivity {
@@ -27,10 +28,16 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private String username;
     private ArrayAdapter<String> adapter;
-    private ArrayList<String> fragNameArray = new ArrayList<>();
-    private ArrayList<String> fragReceiverArray = new ArrayList<>();
+    private String[] fragNameArray = new String[3];
+    private String[] fragReceiverArray = new String[3];
+    private int[] fragSizeArray = new int[3];
+    private boolean[] fragExist = new boolean[3];
     private String TAG = "Cooper Mode File Merge/Decry Activity";
     private String secretkey;
+    private FileHandler fileHandler = new FileHandler();
+    private File mergedFile;
+    private String fileName;
+    private String originFileName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +47,7 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
         username = intent.getStringExtra("username");
         Log.e("username",username);
         secretkey = intent.getStringExtra("secret key");
-        listView = (ListView) findViewById(R.id.listViewResults);
+        listView = findViewById(R.id.listViewResults);
         //Store all the available download file into fileList
         ArrayList<String> fileList = new ArrayList<>();
         getBookList(fileList);
@@ -50,7 +57,7 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final String fileName = (String) parent.getItemAtPosition(position);
+                fileName = (String) parent.getItemAtPosition(position);
 
                 //implement file download and file upload
                 Toast.makeText(getBaseContext(),fileName+" is selected",Toast.LENGTH_SHORT).show();
@@ -60,15 +67,20 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
+                        int i = 0;
                         for(DataSnapshot child:dataSnapshot.child("fragments").getChildren())
                         {
                             String fragmentName = child.child("fragName").getValue(String.class);
                             String receiver = child.child("receiver").getValue(String.class);
+                            String fragSize = child.child("fragSize").getValue(String.class);
                             Log.i(TAG,"fragment name: "+fragmentName);
-                            fragNameArray.add(fragmentName);
-                            fragReceiverArray.add(receiver);
+                            fragNameArray[i]=fragmentName;
+                            fragReceiverArray[i]=receiver;
+                            fragSizeArray[i] = Integer.parseInt(fragSize);
+                            i++;
                         }
-                        String originalFileName = dataSnapshot.child("file_name").getValue(String.class);
+
+                        originFileName = dataSnapshot.child("file_name").getValue(String.class);
                         //TODO: 1.search internal file dir and external file dir
 
                         ArrayList<FragmentInfo> fragmentInfos = new ArrayList<>();
@@ -77,12 +89,13 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                         int index = 0;
                         while(index<3||fragmentFoundCount<2)
                         {
-                            File fragment = internalFileSearch(fragNameArray.get(index));
+                            File fragment = internalFileSearch(fragNameArray[index]);
                             if(fragment!=null)
                             {
                                 fragmentFoundCount++;
                                 fragmentInfos.add(new FragmentInfo(fragment,index));
-                                Log.i(TAG,fragNameArray.get(index)+" is founded");
+                                fragExist[index] = true;
+                                Log.i(TAG,fragNameArray[index]+" is founded");
                             }
                             index++;
                         }
@@ -99,24 +112,48 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                                 {
                                     // fragment A, B founded
                                     //XOR mode 1
-
+                                    try {
+                                        mergedFile = fileHandler.mergeCooper(1,fragmentInfos.get(0).fragment,fragmentInfos.get(1).fragment,fragSizeArray,originFileName);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                                 else{
                                     //fragment A, C founded
                                     //XOR mode 2
+                                    try {
+                                        mergedFile = fileHandler.mergeCooper(2,fragmentInfos.get(0).fragment,fragmentInfos.get(2).fragment,fragSizeArray,originFileName);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
-                            else if(fragmentInfos.get(0).fragIndex==1 && fragmentInfos.get(1).fragIndex==2){
+                            else{
+                                //fragmentInfos.get(0).fragIndex==1 && fragmentInfos.get(1).fragIndex==2
                                 //fragment b, c founded
                                 //XOR mode 3
+                                try {
+                                    mergedFile = fileHandler.mergeCooper(3,fragmentInfos.get(1).fragment,fragmentInfos.get(2).fragment,fragSizeArray,originFileName);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
 
-                            }
-                            else{
-                                Log.e(TAG,"unkonwn error");
-                            }
+                            new Crypt.DecryptNode(originFileName,mergedFile,secretkey);
+                            //TODO: finish decrypt, check if the file is merge/decrypt successful or not?
+
                         }
                         else{
                             //TODO: reminder the user which fragment is missing and who have this fragment
+                            String notifyMessage = "";
+                            for(int j = 0;j<3;j++)
+                            {
+                                if(!fragExist[j])
+                                {
+                                    notifyMessage +="Fragment "+fragNameArray[j]+" is missing,"+" you can get this fragment from "+fragReceiverArray[j]+".";
+                                }
+                            }
+                            Toast.makeText(getBaseContext(),notifyMessage,Toast.LENGTH_LONG).show();
                         }
                     }
 

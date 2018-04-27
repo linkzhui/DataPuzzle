@@ -13,7 +13,9 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -125,28 +127,19 @@ public class FileHandler {
                     BufferedOutputStream xorOut = new BufferedOutputStream(new FileOutputStream(fragment[2]));
                     BufferedInputStream inFile1 = new BufferedInputStream(new FileInputStream(fragment[0]));
                     BufferedInputStream inFile2 = new BufferedInputStream(new FileInputStream(fragment[1]));
-//                    byte[] input1 = new byte[64];
-//                    byte[] input2 = new byte[64];
-                    int bytesRead1, byteRead2;
-                    int j = 0;
-                    for (;j < Math.min(fragment[0].length(),fragment[1].length()); j++)
-                    {
-                        // load one byte from the input file and write it to the output file
-                        xorOut.write(inFile1.read()^inFile2.read());
+                    byte[] input1 = new byte[64];
+                    byte[] input2 = new byte[64];
+                    int bytesRead1, bytesRead2;
+
+                    while ((bytesRead1 = inFile1.read(input1)) != -1 && (bytesRead2 =inFile2.read(input2)) != -1 ) {
+                        for(int i = 0;i<Math.min(bytesRead1,bytesRead2);i++) {
+                            xorOut.write(input1[i]^input2[i]);
+                        }
                     }
-                    while(j<fragment[1].length())
-                    {
-                        xorOut.write(0^inFile2.read());
-                        j++;
+                    if(bytesRead1 == -1){
+                        xorOut.write(inFile2.read());
                     }
-//                    while ((bytesRead1 = inFile1.read(input1)) != -1 && (byteRead2 =inFile2.read(input2)) != -1 ) {
-//                        for(int i = 0;i<Math.min(bytesRead1,byteRead2);i++) {
-//                            xorOut.write(input1[i]^input2[i]);
-//                        }
-//                    }
-//                    if(bytesRead1 == -1){
-//                        xorOut.write(inFile2.read());
-//                    } else if(byteRead2 == -1){
+//                    else if(bytesRead2 == -1){
 //                        xorOut.write(inFile1.read());
 //                    }
 
@@ -259,12 +252,6 @@ public class FileHandler {
                 }
                 outputFile.close();
                 break;
-
-            case "Cooperation":
-                //TODO:cooperative mode merge
-
-
-                break;
         }
         Log.i(TAG,"merge file size: "+mergedFile.length()+"");
         if(mergedFile.length()>0)
@@ -278,6 +265,104 @@ public class FileHandler {
 
     }
 
+    public File mergeCooper(int mode, File fragment1, File fragment2,int[] fragSize,String fileName) throws IOException {
+        //Fragment 1 size <= Fragment 2 size
+        //fragment A, B, C (XOR)
+        //XOR mode 1: A, B
+        //XOR mode 2: A, C
+        //XOR mode 3: B, C
+        File mergedFile = new File(context.getFilesDir(),fileName+".enc");
+        File fileB = null;
+        File fileA = null;
+        BufferedOutputStream outputFile = new BufferedOutputStream(new FileOutputStream(mergedFile));
+        BufferedInputStream inputs[] = new BufferedInputStream[2];
+        inputs[0] = new BufferedInputStream(new FileInputStream(fragment1));
+        inputs[1] = new BufferedInputStream(new FileInputStream(fragment2));
+        BufferedInputStream frag[] = new BufferedInputStream[2];
+        switch (mode)
+        {
+            case 1:
+            {
+                frag[0] = inputs[0];
+                frag[1] = inputs[1];
+                break;
+            }
+            case 2:
+            {
+                //XOR mode 2: A, C
+                byte[] input0 = new byte[64];
+                byte[] input1 = new byte[64];
+                int bytesRead0;
+                int bytesRead1;
+                int count = 0;
+                fileA = fragment1;
+                fileB = File.createTempFile("",fileName+".B",context.getCacheDir());
+                frag[0] = new BufferedInputStream(new FileInputStream(fileA));
+                frag[1] = new BufferedInputStream(new FileInputStream(fileB));
+                BufferedOutputStream outputStreamB = new BufferedOutputStream(new FileOutputStream(fileB));
+
+                //fragment B's size should less or equal to fragment A's size
+                while ((bytesRead0 = inputs[0].read(input1)) != -1 && (bytesRead1 =inputs[1].read(input1)) != -1 ) {
+                    for(int i = 0;i<Math.min(bytesRead0,bytesRead1)&&count<fragSize[1];count++,i++) {
+                        outputStreamB.write(input1[i]^input0[i]);
+                    }
+                }
+                inputs[0].close();
+                inputs[1].close();
+                outputStreamB.close();
+                break;
+            }
+            case 3:
+            {
+                //XOR mode 3: B, C
+                byte[] input0 = new byte[64];
+                byte[] input1 = new byte[64];
+                int bytesRead0;
+                int bytesRead1;
+                fileB = fragment1;
+                fileA = File.createTempFile("",fileName+".A",context.getCacheDir());
+                frag[0] = new BufferedInputStream(new FileInputStream(fileA));
+                frag[1] = new BufferedInputStream(new FileInputStream(fileB));
+                BufferedOutputStream outputStreamA = new BufferedOutputStream(new FileOutputStream(fileA));
+                while ((bytesRead0 = inputs[0].read(input1)) != -1 && (bytesRead1 =inputs[1].read(input1)) != -1 ) {
+                    for(int i = 0;i<Math.min(bytesRead0,bytesRead1);i++) {
+                        outputStreamA.write(input1[i]^input0[i]);
+                    }
+                }
+                //if fragment C size is bigger than fragment B size,
+                //then we fragment A need to read one more byte
+                if(fragment2.length()>fragment1.length())
+                {
+                    outputStreamA.write(inputs[1].read());
+                }
+                inputs[0].close();
+                inputs[1].close();
+                outputStreamA.close();
+                break;
+            }
+        }
+
+
+        for(int i =0; i<frag.length; i++) {
+            int b;
+            while((b=frag[i].read())!=-1)
+            {
+                outputFile.write(b);
+            }
+        }
+
+        frag[0].close();
+        frag[1].close();
+        outputFile.close();
+        //TODO: Delete the fragment after file merge successful
+//        fileA.delete();
+//        fileB.delete();
+//        fragment1.delete();
+//        fragment2.delete();
+
+        return mergedFile;
+
+    }
 
     public static class FileHandlerInfo implements Serializable{
         String fileName;
