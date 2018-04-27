@@ -1,5 +1,6 @@
 package com.example.raymon.datapuzzle;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -28,6 +29,12 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
     AppSectionsPagerAdapter mAppSectionsPagerAdapter;
     public static String username;
     ViewPager mViewPager;
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +45,17 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
         //create the adapter that will return a feature mode for user's choice
         mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager());
 
+        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if(permission != PackageManager.PERMISSION_GRANTED)
+        {
+            Toast.makeText(this,"Permission gained failled",Toast.LENGTH_SHORT).show();
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    this,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
         //Set up the action bar.
         final ActionBar actionBar = getActionBar();
 
