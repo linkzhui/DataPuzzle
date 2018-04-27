@@ -76,13 +76,13 @@ public class FileHandler {
         //if the mode is individual, the number of file fragment is 2
         //if the mode is cooperate, the number of file fragment is 3
         int fragNum = mode.equals("Individual") ? 2:3;
-        File[] fragment = new File[fragNum];
+        final File[] fragment = new File[fragNum];
         final String[] fragName = new String[fragNum];
         for (int subfileIndex = 0; subfileIndex < 2; subfileIndex++)
         {
             // If the mode is Individual, create the temp fragment file to store the result of split file
             // If the mode is Cooperate, create the file store in internal storage
-            fragment[subfileIndex] = mode.equals("Individual")? File.createTempFile(filename,"."+subfileIndex,context.getCacheDir()):new File(context.getFilesDir(),filename+"."+subfileIndex);
+            fragment[subfileIndex] = mode.equals("Individual")? new File(context.getFilesDir(), filename+"."+subfileIndex):new File(context.getFilesDir(),filename+"."+subfileIndex);
             fragName[subfileIndex] = filename+"."+subfileIndex;
             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fragment[subfileIndex]));
             Log.i(TAG,"fragment name: "+fragment[subfileIndex]);
@@ -128,25 +128,22 @@ public class FileHandler {
                     byte[] input1 = new byte[64];
                     byte[] input2 = new byte[64];
                     int bytesRead1, byteRead2;
-                    while ((bytesRead1 = inFile1.read(input1)) != -1 || (byteRead2 = inFile2.read(input2)) != -1 ) {
-                        int i = 0;
-                        for(byte b: input1) {
-                            input2[i] = (byte)(b ^ input2[i++]);
-                        }
-                        if (xorOut != null) {
-                            xorOut.write(input2);
+                    while ((bytesRead1 = inFile1.read(input1)) != -1 && (byteRead2 =inFile2.read(input2)) != -1 ) {
+                        for(int i = 0;i<Math.min(bytesRead1,byteRead2);i++) {
+                            xorOut.write(input1[i]^input2[i]);
                         }
                     }
-                    if(bytesRead1 == -1){
-                        xorOut.write(inFile2.read());
-                    } else if(byteRead2 == -1){
-                        xorOut.write(inFile1.read());
-                    }
+//                    if(bytesRead1 == -1){
+//                        xorOut.write(inFile2.read());
+//                    } else if(byteRead2 == -1){
+//                        xorOut.write(inFile1.read());
+//                    }
 
                     inFile1.close();
                     inFile2.close();
                     xorOut.close();
 
+                    Log.i(TAG,"XOR file size is: "+fragment[2].length());
 
                     // Insert fileFragment into the SQLite
                     String[] filePaths = new String[3];
@@ -165,15 +162,19 @@ public class FileHandler {
                                 mDatabase.child("users").child(username).child("files").child(filenameWithoutExt).setValue(null);
                             }
                             DatabaseReference fileRef = mDatabase.child("users").child(username).child("files").child(filenameWithoutExt);
-                            FragDatabase fragDatabase = new FragDatabase();
-                            fragDatabase.setFragName1(fragName[0]);
-                            fragDatabase.setFragName2(fragName[1]);
-                            fragDatabase.setFragName3(fragName[2]);
+
                             FileDatabase fileDatabase = new FileDatabase();
                             fileDatabase.setMode(mode);
                             fileDatabase.setFile_name(filename);
                             fileRef.setValue(fileDatabase);
-                            fileRef.child("fragments").setValue(fragDatabase);
+                            for(int i = 1;i<=3;i++)
+                            {
+                                fileRef.child("fragments").child("fragName"+i).child("fragName").setValue(fragName[i-1]);
+                                fileRef.child("fragments").child("fragName"+i).child("receiver").setValue("null");
+                                fileRef.child("fragments").child("fragName"+i).child("fragSize").setValue(fragment[i-1].length());
+                            }
+
+
                         }
 
                         @Override
@@ -232,7 +233,7 @@ public class FileHandler {
         inputs[1] = new BufferedInputStream(new FileInputStream(fragments.get(1)));
 
 
-        File mergedFile = File.createTempFile(origFileName,".enc",context.getCacheDir());
+        File mergedFile = new File(context.getFilesDir(),origFileName+".enc");
         BufferedOutputStream outputFile = new BufferedOutputStream(new FileOutputStream(mergedFile));
 
         switch(mode){
@@ -344,6 +345,31 @@ public class FileHandler {
         }
     }
 
+    public static class FragInfo implements Serializable{
+        String fragName;
+        String receiver;
+        public String getFragName() {
+            return fragName;
+        }
+
+        public void setFragName(String fragName) {
+            this.fragName = fragName;
+        }
+
+        public void setReceiver(String receiver) {
+            this.receiver = receiver;
+        }
+
+        public String getReceiver() {
+            return receiver;
+
+        }
+
+
+        public FragInfo (){
+
+        }
+    }
     public void createFileFragment(String fileFragmentsOrigin, String fileFragmentsFirst, String fileFragmentsFirstUri, String fileFragmentsSecond,String fileFragmentsSecondUri ,String fileFragmentsThird, String fileFragmentsThirdUri){
         DBHelper db = new DBHelper(context);
         long id = db.insertFileFragments(fileFragmentsOrigin,fileFragmentsFirst,fileFragmentsFirstUri,fileFragmentsSecond,fileFragmentsSecondUri, fileFragmentsThird, fileFragmentsThirdUri );
