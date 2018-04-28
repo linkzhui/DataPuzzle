@@ -20,6 +20,7 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
@@ -29,14 +30,18 @@ import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.example.raymon.datapuzzle.DeviceListFragment.DeviceActionListener;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,6 +49,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URI;
 
 /**
  * A fragment that manages a particular peer and allows interaction with device
@@ -52,6 +58,7 @@ import java.net.Socket;
 public class DeviceDetailFragment extends Fragment implements ConnectionInfoListener {
 
     protected static final int CHOOSE_FILE_RESULT_CODE = 20;
+    protected static final int CHOOSE_FILE_RESULT_InternalFile_CODE = 20;
     private View mContentView = null;
     private WifiP2pDevice device;
     private WifiP2pInfo info;
@@ -59,6 +66,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
     String fileName;
     String fileURI;
+    boolean owner;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -103,6 +111,8 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                     }
                 });
 
+        final CheckBox ownerCheckBox = (CheckBox)mContentView.findViewById(R.id.checkbox_owner);
+
 
         // todo!
         // send file name in internal storage and send
@@ -113,37 +123,31 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                     public void onClick(View v) {
                         // Allow user to pick an image from Gallery or other
                         // registered apps
-                        sendFile();
+                        if(ownerCheckBox.isChecked()){
+                            // if it is initial by the owner
+                            Intent intent = new Intent(getActivity(),ShowFileFragmentListActivity.class);
+                            startActivityForResult(intent,CHOOSE_FILE_RESULT_InternalFile_CODE);
+                        }else{
+                            // if initital by the not-owner
+                            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                            intent.setType("*/*");
+                            startActivityForResult(intent, CHOOSE_FILE_RESULT_CODE);
+                        }
+
                     }
                 });
 
         return mContentView;
     }
 
-    // to delete and replace with new send file function
-    public void sendFile(){
-        //openFileInput(filename);
-        //Uri uri = data.getData();
-        TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
-        statusText.setText("Sending: " + fileURI);
-        Log.d(WiFiDirectCopActivity.TAG, "Intent----------- " + fileURI);
-        Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
-        serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
-        serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, fileURI);
-        serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
-                info.groupOwnerAddress.getHostAddress());
-        serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
-        getActivity().startService(serviceIntent);
-
-    }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         // User has picked an image. Transfer it to group owner i.e peer using
         // FileTransferService.
         Uri uri = data.getData();
+        String filename = getFileName(uri);
+        //todo: write file name
         TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
         statusText.setText("Sending: " + uri);
         Log.d(WiFiDirectCopActivity.TAG, "Intent----------- " + uri);
@@ -153,7 +157,30 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
                 info.groupOwnerAddress.getHostAddress());
         serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
+        serviceIntent.putExtra(FileTransferService.EXTRA_FILE_NAME, filename);
         getActivity().startService(serviceIntent);
+    }
+
+    public String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -162,6 +189,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
             progressDialog.dismiss();
         }
         this.info = info;
+
         this.getView().setVisibility(View.VISIBLE);
 
         // The owner IP is now known.
@@ -178,12 +206,14 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         // server. The file server is single threaded, single connection server
         // socket.
         if (info.groupFormed && info.isGroupOwner) {
+            mContentView.findViewById(R.id.checkbox_owner).setVisibility(View.GONE);
             new FileServerAsyncTask(getActivity(), mContentView.findViewById(R.id.status_text))
                     .execute();
         } else if (info.groupFormed) {
             // The other device acts as the client. In this case, we enable the
             // get file button.
             mContentView.findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
+            mContentView.findViewById(R.id.checkbox_owner).setVisibility(View.VISIBLE);
             ((TextView) mContentView.findViewById(R.id.status_text)).setText(getResources()
                     .getString(R.string.client_text));
         }
@@ -221,6 +251,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         view = (TextView) mContentView.findViewById(R.id.status_text);
         view.setText(R.string.empty);
         mContentView.findViewById(R.id.btn_start_client).setVisibility(View.GONE);
+        mContentView.findViewById(R.id.checkbox_owner).setVisibility(View.GONE);
         this.getView().setVisibility(View.GONE);
     }
 
@@ -249,20 +280,30 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 Log.d(WiFiDirectCopActivity.TAG, "Server: Socket opened");
                 Socket client = serverSocket.accept();
                 Log.d(WiFiDirectCopActivity.TAG, "Server: connection done");
+
+                // todo: change the saving directory to extrenal file
+
+
+
+                //InputStream inputstream = client.getInputStream();
+                BufferedInputStream in = new BufferedInputStream(client.getInputStream());
+                DataInputStream d = new DataInputStream(in);
+                String fileName = d.readUTF();
+
+
                 final File f = new File(Environment.getExternalStorageDirectory() + "/"
-                        + context.getPackageName() + "/wifip2pshared-" + System.currentTimeMillis()
-                        + ".jpg");
+                        + fileName);
 
                 File dirs = new File(f.getParent());
                 if (!dirs.exists())
                     dirs.mkdirs();
                 f.createNewFile();
-
                 Log.d(WiFiDirectCopActivity.TAG, "server: copying files " + f.toString());
-                InputStream inputstream = client.getInputStream();
-                copyFile(inputstream, new FileOutputStream(f));
+
+                copyFile(d, new FileOutputStream(f));
                 serverSocket.close();
                 return f.getAbsolutePath();
+
             } catch (IOException e) {
                 Log.e(WiFiDirectCopActivity.TAG, e.getMessage());
                 return null;
@@ -313,7 +354,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         return true;
     }
 
-    public void getFileName(String filename, String fileURI){
+    public void getInfo(String filename, String fileURI, String mode){
         this.fileName = filename;
         this.fileURI = fileURI;
     }
