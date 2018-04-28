@@ -141,7 +141,7 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
 
                             new Crypt.DecryptNode(originFileName,mergedFile,secretkey);
                             //TODO: finish decrypt, check if the file is merge/decrypt successful or not?
-
+                            //TODO: delete file metadata from SQLite and firebase
                         }
                         else{
                             //TODO: reminder the user which fragment is missing and who have this fragment

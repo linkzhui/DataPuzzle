@@ -125,26 +125,31 @@ public class FileHandler {
                     fragment[2] = new File(context.getFilesDir(),filename+".XOR");
                     fragName[2] = filename+".XOR";
                     BufferedOutputStream xorOut = new BufferedOutputStream(new FileOutputStream(fragment[2]));
-                    BufferedInputStream inFile1 = new BufferedInputStream(new FileInputStream(fragment[0]));
-                    BufferedInputStream inFile2 = new BufferedInputStream(new FileInputStream(fragment[1]));
+                    BufferedInputStream inFile0 = new BufferedInputStream(new FileInputStream(fragment[0]));
+                    BufferedInputStream inFile1 = new BufferedInputStream(new FileInputStream(fragment[1]));
                     byte[] input1 = new byte[64];
                     byte[] input2 = new byte[64];
                     int bytesRead1, bytesRead2;
 
-                    while ((bytesRead1 = inFile1.read(input1)) != -1 && (bytesRead2 =inFile2.read(input2)) != -1 ) {
+                    while ((bytesRead1 = inFile0.read(input1)) != -1 && (bytesRead2 =inFile1.read(input2)) != -1 ) {
                         for(int i = 0;i<Math.min(bytesRead1,bytesRead2);i++) {
                             xorOut.write(input1[i]^input2[i]);
                         }
                     }
-                    if(bytesRead1 == -1){
-                        xorOut.write(inFile2.read());
+                    if(fragment[0].length()<fragment[1].length())
+                    {
+                        xorOut.write(inFile1.read());
+                    }
+                    else if(fragment[0].length()>fragment[1].length())
+                    {
+                        xorOut.write(inFile0.read());
                     }
 //                    else if(bytesRead2 == -1){
 //                        xorOut.write(inFile1.read());
 //                    }
 
+                    inFile0.close();
                     inFile1.close();
-                    inFile2.close();
                     xorOut.close();
 
                     Log.i(TAG,"XOR file size is: "+fragment[2].length());
