@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,6 +31,8 @@ public class FileTransferService extends IntentService {
     public static final String EXTRAS_FILE_PATH = "file_url";
     public static final String EXTRAS_GROUP_OWNER_ADDRESS = "go_host";
     public static final String EXTRAS_GROUP_OWNER_PORT = "go_port";
+    public static final String EXTRA_FILE_NAME = "file_name";
+
 
     public FileTransferService(String name) {
         super(name);
@@ -49,6 +53,7 @@ public class FileTransferService extends IntentService {
         if (intent.getAction().equals(ACTION_SEND_FILE)) {
             String fileUri = intent.getExtras().getString(EXTRAS_FILE_PATH);
             String host = intent.getExtras().getString(EXTRAS_GROUP_OWNER_ADDRESS);
+            String fileName = intent.getExtras().getString(EXTRA_FILE_NAME);
             Socket socket = new Socket();
             int port = intent.getExtras().getInt(EXTRAS_GROUP_OWNER_PORT);
 
@@ -58,7 +63,11 @@ public class FileTransferService extends IntentService {
                 socket.connect((new InetSocketAddress(host, port)), SOCKET_TIMEOUT);
 
                 Log.d(WiFiDirectCopActivity.TAG, "Client socket - " + socket.isConnected());
-                OutputStream stream = socket.getOutputStream();
+                BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
+                DataOutputStream dos = new DataOutputStream(out);
+                dos.writeUTF(fileName);
+
+                //OutputStream stream = socket.getOutputStream();
                 ContentResolver cr = context.getContentResolver();
                 InputStream is = null;
                 try {
@@ -66,7 +75,7 @@ public class FileTransferService extends IntentService {
                 } catch (FileNotFoundException e) {
                     Log.d(WiFiDirectCopActivity.TAG, e.toString());
                 }
-                DeviceDetailFragment.copyFile(is, stream);
+                DeviceDetailFragment.copyFile(is, dos);
                 Log.d(WiFiDirectCopActivity.TAG, "Client: Data written");
                 // delte file from internal storage
                 //deltefile(fileUri);

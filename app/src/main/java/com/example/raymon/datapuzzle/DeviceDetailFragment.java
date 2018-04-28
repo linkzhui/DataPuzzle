@@ -40,6 +40,8 @@ import android.widget.TextView;
 
 import com.example.raymon.datapuzzle.DeviceListFragment.DeviceActionListener;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -155,6 +157,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
                 info.groupOwnerAddress.getHostAddress());
         serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
+        serviceIntent.putExtra(FileTransferService.EXTRA_FILE_NAME, filename);
         getActivity().startService(serviceIntent);
     }
 
@@ -279,37 +282,28 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 Log.d(WiFiDirectCopActivity.TAG, "Server: connection done");
 
                 // todo: change the saving directory to extrenal file
+
+
+
+                //InputStream inputstream = client.getInputStream();
+                BufferedInputStream in = new BufferedInputStream(client.getInputStream());
+                DataInputStream d = new DataInputStream(in);
+                String fileName = d.readUTF();
+
+
                 final File f = new File(Environment.getExternalStorageDirectory() + "/"
-                        + context.getPackageName() + "/wifip2pshared-" + System.currentTimeMillis()
-                        + ".jpg");
+                        + fileName);
 
                 File dirs = new File(f.getParent());
                 if (!dirs.exists())
                     dirs.mkdirs();
                 f.createNewFile();
-
-
-
-                /***
-                 *  File receivedFolder = new File(Environment.getExternalStoragePublicDirectory(
-                 Environment.DIRECTORY_DOWNLOADS), "DataPuzzle");
-                 if (!receivedFolder.mkdirs()) {
-                 Log.e(TAG, "Directory not created");
-                 }
-                 else{
-                 Log.i(TAG,"Directory created successful");
-                 }
-
-                 File receivedFile = new File(receivedFolder,"test.jpg");
-                 BufferedOutputStream outFile = new BufferedOutputStream(new FileOutputStream(receivedFile));
-                 */
-
-
                 Log.d(WiFiDirectCopActivity.TAG, "server: copying files " + f.toString());
-                InputStream inputstream = client.getInputStream();
-                copyFile(inputstream, new FileOutputStream(f));
+
+                copyFile(d, new FileOutputStream(f));
                 serverSocket.close();
                 return f.getAbsolutePath();
+
             } catch (IOException e) {
                 Log.e(WiFiDirectCopActivity.TAG, e.getMessage());
                 return null;
