@@ -103,9 +103,10 @@ public class ShowFileFragmentListActivity extends AppCompatActivity {
                         childPosition);
 
 
-                Intent resultintent = new Intent();
-                resultintent.setData(Uri.parse(file_fragment_uri));
-                setResult(Activity.RESULT_OK, resultintent);
+                Intent resultIntent = new Intent();
+                resultIntent.setData(Uri.parse(file_fragment_uri));
+                resultIntent.putExtra("fileOriginName",origin_file_name);
+                setResult(Activity.RESULT_OK, resultIntent);
                 finish();
 
                 return false;

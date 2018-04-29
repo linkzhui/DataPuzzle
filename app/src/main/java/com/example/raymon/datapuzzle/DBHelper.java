@@ -119,6 +119,18 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public int updateFileFragmentNameOne(FileFragment fileFragment) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(FileFragment.COLUMN_FileFragments_First, fileFragment.getFileFragmentNameOne());
+
+        // updating row
+        return db.update(FileFragment.TABLE_NAME, values, FileFragment.COLUMN_ID + " = ?",
+                new String[]{String.valueOf(fileFragment.getId())});
+    }
+
+
     public int numberOfRows(){
         SQLiteDatabase db = this.getReadableDatabase();
         int numRows = (int) DatabaseUtils.queryNumEntries(db, FileFragment.TABLE_NAME);
