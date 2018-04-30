@@ -291,8 +291,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
                 // todo: change the saving directory to extrenal file
 
-
-
                 //InputStream inputstream = client.getInputStream();
                 BufferedInputStream in = new BufferedInputStream(client.getInputStream());
                 DataInputStream d = new DataInputStream(in);
