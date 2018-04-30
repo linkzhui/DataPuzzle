@@ -35,6 +35,7 @@ public class CooperateModeFragment extends Fragment {
     //private Button mbuttonReceiver;
 
     private EditText secretKeyText;
+    private String secretKey;
     private String username;
     private Crypt crypt = new Crypt();
     private String TAG = "Cooperate Mode Fragment";
@@ -54,12 +55,12 @@ public class CooperateModeFragment extends Fragment {
         // Inflate the layout for this fragment
         View fragment_view = inflater.inflate(R.layout.fragment_cooperate_mode, container, false);
         username = getArguments().getString("username");
-
         mbuttonSplitEnc = fragment_view.findViewById(R.id.buttonSplitEnc);
         mbuttonDecMerge = fragment_view.findViewById(R.id.buttonDecMerge);
         mbuttonWifiDirect = fragment_view.findViewById(R.id.buttonWifiDirect);
         //mbuttonReceiver = fragment_view.findViewById(R.id.buttonReceiver);
         secretKeyText = fragment_view.findViewById(R.id.secretKeyText);
+        secretKey = secretKeyText.getText().toString();
 
         mbuttonSplitEnc.setOnClickListener(new View.OnClickListener(){
 
@@ -88,6 +89,7 @@ public class CooperateModeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(),CooperFileDecMergeActivity.class);
+                intent.putExtra("secret key",secretKey);
                 startActivity(intent);
                 Toast.makeText(getContext(),"Dec/Merge button",Toast.LENGTH_SHORT).show();
             }

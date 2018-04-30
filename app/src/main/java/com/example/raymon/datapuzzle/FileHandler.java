@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Jerry on 3/21/18.
@@ -266,6 +267,9 @@ public class FileHandler {
     }
 
     public File mergeCooper(int mode, File fragment1, File fragment2,long[] fragSize,String fileName) throws IOException {
+        String TAG = "Cooperate File Merge";
+        Log.i(TAG,"Begin file merge");
+        Log.i(TAG,"file fragement 1 is: "+fragment1.getName()+" , framgnment 2 is: "+fragment2.getName());
         //Fragment 1 size <= Fragment 2 size
         //fragment A, B, C (XOR)
         //XOR mode 1: A, B
@@ -359,7 +363,8 @@ public class FileHandler {
 //        fileB.delete();
 //        fragment1.delete();
 //        fragment2.delete();
-
+        Log.i(TAG,"file merge completed");
+        Log.i(TAG,"merged file length is: "+mergedFile.length());
         return mergedFile;
 
     }

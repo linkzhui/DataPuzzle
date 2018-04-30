@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.apache.commons.io.IOUtils;
 
@@ -117,10 +118,11 @@ public class Crypt {
         String TAG = "Decrypt progress";
         Context context=UserModeActivity.getContextOfApplication();
 
-
+        Log.i(TAG,"begin file decrypt");
         //**Use user's secret key input to generate secret key for cipher to encrypt/decrypt the message
         // password to encrypt the file
         String userKey = decryptNode.secretKey;
+        Log.i(TAG,"secret key: "+userKey);
         byte[] salt = new byte[8];
         //For the AES key size, it can be 128, 192, 256 bits. we choose 128 bits -> 16 bytes;
         SecretKeyFactory factory = SecretKeyFactory
@@ -173,7 +175,7 @@ public class Crypt {
             outFile.flush();
             outFile.close();
             System.out.println("File Decrypted.");
-
+            Toast.makeText(context,"Check the file under Download/DataPuzzle folder",Toast.LENGTH_SHORT).show();
             Intent myIntent = new Intent(context, UserModeActivity.class);
             myIntent.putExtra("username", UserModeActivity.username);
             context.startActivity(myIntent);

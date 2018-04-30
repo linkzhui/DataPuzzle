@@ -86,7 +86,7 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                         int fragmentFoundCount = 0;
                         //the index in the fragment Name array, which is obtained from the firebase database
                         int index = 0;
-                        while(index<3||fragmentFoundCount<2)
+                        while(index<3 && fragmentFoundCount<2)
                         {
                             File fragment = internalFileSearch(fragNameArray[index]);
                             if(fragment!=null)
@@ -138,7 +138,13 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                                 }
                             }
 
-                            new Crypt.DecryptNode(originFileName,mergedFile,secretkey);
+                            Log.i(TAG,"Begin file merge");
+                            Crypt crypt = new Crypt();
+                            try {
+                                crypt.AESFileDecryption(new Crypt.DecryptNode(originFileName,mergedFile,secretkey));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             //TODO: finish decrypt, check if the file is merge/decrypt successful or not?
                             //TODO: delete file metadata from SQLite and firebase
                         }
@@ -191,17 +197,6 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
         return;
     }
 
-    private File searchFile(String fname)
-    {
-        File result = internalFileSearch(fname);
-        if(result==null)
-        {
-            //the fragment is not exist in the internal storage, search if the fragment is exist in the external storage
-            result = externalFileSearch(fname);
-        }
-        return result;
-
-    }
     private File internalFileSearch(String fname)
     {
         //search the file fragment is existed in the internal storage or not?
