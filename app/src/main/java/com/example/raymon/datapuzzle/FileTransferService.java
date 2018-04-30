@@ -86,9 +86,9 @@ public class FileTransferService extends IntentService {
                 DeviceDetailFragment.copyFile(is, dos);
                 Log.d(WiFiDirectCopActivity.TAG, "Client: Data written");
                 if(!fileOriginName.equals("file_origin_name")){
-                    //updateFileFragmentDataBase(fileOriginName, fileName);
+                    updateFileFragmentDataBase(fileOriginName, fileName);
                 }
-                 // delte file from internal storage
+                 //delte file from internal storage
                 //deltefile(fileUri);
             } catch (IOException e) {
                 Log.e(WiFiDirectCopActivity.TAG, e.getMessage());
@@ -154,8 +154,10 @@ public class FileTransferService extends IntentService {
                 &&toUpdateFragment.getFileFragmentNameTwo() == null
                 &&toUpdateFragment.getFileFragmentNameThree() == null ){
             // delete toUpdateFragment from Database
+            db.deleteFileFragment(toUpdateFragment);
         }else{
             // update toUpdateFragment to Database
+            db.updateFileFragment(toUpdateFragment);
         }
 
     }
