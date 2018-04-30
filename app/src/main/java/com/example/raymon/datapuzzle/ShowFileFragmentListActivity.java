@@ -134,21 +134,21 @@ public class ShowFileFragmentListActivity extends AppCompatActivity {
             List<String> childList = new ArrayList<>();
             List<String> URIList = new ArrayList<>();
 
-            if(fileFragmentsList.get(i).getFileFragmentNameOne()!= null){
+            if(!fileFragmentsList.get(i).getFileFragmentNameOne().equals("null")){
                 childList.add(fileFragmentsList.get(i).getFileFragmentNameOne());
                 URIList.add(fileFragmentsList.get(i).getFileFragmentNameOneUri());
             }
 
-            if(fileFragmentsList.get(i).getFileFragmentNameTwo()!= null){
+            if(!fileFragmentsList.get(i).getFileFragmentNameTwo().equals("null")){
                 childList.add(fileFragmentsList.get(i).getFileFragmentNameTwo());
                 URIList.add(fileFragmentsList.get(i).getFileFragmentNameTwoUri());
             }
 
-            if(fileFragmentsList.get(i).getFileFragmentNameThree()!= null){
+            if(!fileFragmentsList.get(i).getFileFragmentNameThree().equals("null")){
                 childList.add(fileFragmentsList.get(i).getFileFragmentNameThree());
                 URIList.add(fileFragmentsList.get(i).getFileFragmentNameThreeUri());
             }
-            
+
             listDataChild.put(fileOriginName, childList);
             listURIChild.put(fileOriginName,URIList);
         }
