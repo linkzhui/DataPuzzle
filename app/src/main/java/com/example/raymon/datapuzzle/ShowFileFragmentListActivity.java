@@ -103,9 +103,10 @@ public class ShowFileFragmentListActivity extends AppCompatActivity {
                         childPosition);
 
 
-                Intent resultintent = new Intent();
-                resultintent.setData(Uri.parse(file_fragment_uri));
-                setResult(Activity.RESULT_OK, resultintent);
+                Intent resultIntent = new Intent();
+                resultIntent.setData(Uri.parse(file_fragment_uri));
+                resultIntent.putExtra("fileOriginName",origin_file_name);
+                setResult(Activity.RESULT_OK, resultIntent);
                 finish();
 
                 return false;
@@ -133,14 +134,20 @@ public class ShowFileFragmentListActivity extends AppCompatActivity {
             List<String> childList = new ArrayList<>();
             List<String> URIList = new ArrayList<>();
 
-            childList.add(fileFragmentsList.get(i).getFileFragmentNameOne());
-            childList.add(fileFragmentsList.get(i).getFileFragmentNameTwo());
-            childList.add(fileFragmentsList.get(i).getFileFragmentNameThree());
+            if(!fileFragmentsList.get(i).getFileFragmentNameOne().equals("null")){
+                childList.add(fileFragmentsList.get(i).getFileFragmentNameOne());
+                URIList.add(fileFragmentsList.get(i).getFileFragmentNameOneUri());
+            }
 
-            // add file fragment URI
-            URIList.add(fileFragmentsList.get(i).getFileFragmentNameOneUri());
-            URIList.add(fileFragmentsList.get(i).getFileFragmentNameTwoUri());
-            URIList.add(fileFragmentsList.get(i).getFileFragmentNameThreeUri());
+            if(!fileFragmentsList.get(i).getFileFragmentNameTwo().equals("null")){
+                childList.add(fileFragmentsList.get(i).getFileFragmentNameTwo());
+                URIList.add(fileFragmentsList.get(i).getFileFragmentNameTwoUri());
+            }
+
+            if(!fileFragmentsList.get(i).getFileFragmentNameThree().equals("null")){
+                childList.add(fileFragmentsList.get(i).getFileFragmentNameThree());
+                URIList.add(fileFragmentsList.get(i).getFileFragmentNameThreeUri());
+            }
 
             listDataChild.put(fileOriginName, childList);
             listURIChild.put(fileOriginName,URIList);
