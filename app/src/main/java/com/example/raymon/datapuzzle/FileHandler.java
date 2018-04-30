@@ -153,6 +153,7 @@ public class FileHandler {
                     for(int i = 0; i < fragNum; i++){
                         filePaths[i]  = fragment[i].toURI().toString();
                     }
+
                     createFileFragment(filenameWithoutExt,fragName[0], filePaths[0], fragName[1],filePaths[1], fragName[2],filePaths[2]);
 
                     //add the file fragment name into firebase database
@@ -466,8 +467,18 @@ public class FileHandler {
     }
     public void createFileFragment(String fileFragmentsOrigin, String fileFragmentsFirst, String fileFragmentsFirstUri, String fileFragmentsSecond,String fileFragmentsSecondUri ,String fileFragmentsThird, String fileFragmentsThirdUri){
         DBHelper db = new DBHelper(context);
+        List<FileFragment> fileFragmentsList = new ArrayList<>();
+
+        fileFragmentsList.addAll(db.getAllFiles());
+
+        for(int i = 0; i < fileFragmentsList.size(); i++) {
+            String fileOriginName = fileFragmentsList.get(i).getFileOriginName();
+            if(fileFragmentsOrigin.equals(fileOriginName)){
+                db.deleteFileFragment(fileFragmentsList.get(i));
+            }
+        }
+
         long id = db.insertFileFragments(fileFragmentsOrigin,fileFragmentsFirst,fileFragmentsFirstUri,fileFragmentsSecond,fileFragmentsSecondUri, fileFragmentsThird, fileFragmentsThirdUri );
-        //FileFragment n = SQLiteDatabase.getFile(id);
 
     }
 

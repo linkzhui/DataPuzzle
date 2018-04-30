@@ -58,7 +58,7 @@ import java.net.URI;
 public class DeviceDetailFragment extends Fragment implements ConnectionInfoListener {
 
     protected static final int CHOOSE_FILE_RESULT_CODE = 20;
-    protected static final int CHOOSE_FILE_RESULT_InternalFile_CODE = 20;
+    protected static final int CHOOSE_FILE_RESULT_InternalFile_CODE = 21;
     private View mContentView = null;
     private WifiP2pDevice device;
     private WifiP2pInfo info;
@@ -145,12 +145,14 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // User has picked an image. Transfer it to group owner i.e peer using
         // FileTransferService.
+
         Uri uri = data.getData();
         String filename = getFileName(uri);
         //todo: write file name
         TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
         statusText.setText("Sending: " + uri);
         Log.d(WiFiDirectCopActivity.TAG, "Intent----------- " + uri);
+
         Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
         serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
         serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
@@ -158,6 +160,12 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 info.groupOwnerAddress.getHostAddress());
         serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
         serviceIntent.putExtra(FileTransferService.EXTRA_FILE_NAME, filename);
+
+        if(requestCode == CHOOSE_FILE_RESULT_InternalFile_CODE){
+            String fileOriginName = data.getStringExtra("fileOriginName");
+            serviceIntent.putExtra(FileTransferService.EXTRA_File_Origin_Name, fileOriginName);
+        }
+
         getActivity().startService(serviceIntent);
     }
 
@@ -282,8 +290,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 Log.d(WiFiDirectCopActivity.TAG, "Server: connection done");
 
                 // todo: change the saving directory to extrenal file
-
-
 
                 //InputStream inputstream = client.getInputStream();
                 BufferedInputStream in = new BufferedInputStream(client.getInputStream());
