@@ -296,9 +296,10 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 DataInputStream d = new DataInputStream(in);
                 String fileName = d.readUTF();
 
+                File decryptFolder = new File(Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DOWNLOADS), "DataPuzzle");
 
-                final File f = new File(Environment.getExternalStorageDirectory() + "/"
-                        + fileName);
+                final File f = new File(decryptFolder, fileName);
 
                 File dirs = new File(f.getParent());
                 if (!dirs.exists())
@@ -324,10 +325,13 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         protected void onPostExecute(String result) {
             if (result != null) {
                 statusText.setText("File copied - " + result);
-                Intent intent = new Intent();
-                intent.setAction(android.content.Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.parse("file://" + result), "image/*");
+                //Intent intent = new Intent();
+                //intent.setAction(android.content.Intent.ACTION_VIEW);
+                //intent.setDataAndType(Uri.parse("file://" + result), "image/*");
+                //context.startActivity(intent);
+                Intent intent = new Intent(context, UserModeActivity.class);
                 context.startActivity(intent);
+
             }
 
         }
