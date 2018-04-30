@@ -261,7 +261,7 @@ public class FileHandler {
             Log.i(TAG,"merged file name: "+mergedFile.getName());
             Log.i(TAG,"merged file size: "+mergedFile.length()+"");
         }
-        Crypt.DecryptNode decryptNode = new Crypt.DecryptNode(origFileName,mergedFile,secretKey);
+        Crypt.DecryptNode decryptNode = new Crypt.DecryptNode(origFileName,mergedFile,secretKey,0);
         return decryptNode;
 
     }

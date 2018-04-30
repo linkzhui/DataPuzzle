@@ -88,6 +88,7 @@ public class MainActivity extends Activity {
                             //Intent myIntent = new Intent(MainActivity.this, GooDriveConnection.class);
                             Intent myIntent = new Intent(MainActivity.this, UserModeActivity.class);
                             myIntent.putExtra("username", username);
+                            myIntent.putExtra("pageIndex",0);
                             startActivity(myIntent);
 
                         } else {

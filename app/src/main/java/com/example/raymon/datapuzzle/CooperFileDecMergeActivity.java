@@ -141,7 +141,7 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                             Log.i(TAG,"Begin file merge");
                             Crypt crypt = new Crypt();
                             try {
-                                crypt.AESFileDecryption(new Crypt.DecryptNode(originFileName,mergedFile,secretkey));
+                                crypt.AESFileDecryption(new Crypt.DecryptNode(originFileName,mergedFile,secretkey,1));
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -159,6 +159,11 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                                 }
                             }
                             Toast.makeText(getBaseContext(),notifyMessage,Toast.LENGTH_LONG).show();
+                            Intent myIntent = new Intent(getBaseContext(), UserModeActivity.class);
+                            myIntent.putExtra("username", username);
+                            //return to cooperate mode
+                            myIntent.putExtra("pageIndex",1);
+                            startActivity(myIntent);
                         }
                     }
 

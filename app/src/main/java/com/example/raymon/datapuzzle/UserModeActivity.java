@@ -34,6 +34,7 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+    private int currentPageIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
         setContentView(R.layout.activity_user_mode);
         Intent intent = getIntent();
         username = intent.getStringExtra("username");
+        currentPageIndex = intent.getIntExtra("pageIndex",0);
         contextOfApplication = getApplicationContext();
         //create the adapter that will return a feature mode for user's choice
         mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager());
@@ -93,6 +95,12 @@ public class UserModeActivity extends FragmentActivity implements ActionBar.TabL
 
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mViewPager.setCurrentItem(currentPageIndex);
+    }
 
     // When the given tab is selected, switch to the corresponding page in the ViewPager.
     @Override
