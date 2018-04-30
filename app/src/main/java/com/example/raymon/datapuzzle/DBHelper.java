@@ -55,20 +55,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public boolean ifExist(String fileFragmentsOrigin){
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        String Query = "SELECT * FROM " + FileFragment.TABLE_NAME + " WHERE " + FileFragment.COLUMN_FileFragments_Origin + " = " + fileFragmentsOrigin;
-        Cursor cursor = db.rawQuery(Query, null);
-        if(cursor.getCount() <= 0){
-            cursor.close();
-            return false;
-        }
-        cursor.close();
-
-        return true;
-
-    }
 
     public FileFragment getFile(long id) {
         SQLiteDatabase db = this.getReadableDatabase();
