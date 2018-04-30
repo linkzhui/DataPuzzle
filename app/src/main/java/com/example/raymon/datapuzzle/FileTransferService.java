@@ -138,21 +138,21 @@ public class FileTransferService extends IntentService {
         String fileFragmentNameThree = toUpdateFragment.getFileFragmentNameThree();
 
         if (fileFragmentNameOne.equals(fileFragmentName)){
-            toUpdateFragment.setFileFragmentNameOne(null);
-            toUpdateFragment.setFileFragmentNameOneUri(null);
+            toUpdateFragment.setFileFragmentNameOne("null");
+            toUpdateFragment.setFileFragmentNameOneUri("null");
         }else if (fileFragmentNameTwo.equals(fileFragmentName)){
-            toUpdateFragment.setFileFragmentNameTwo(null);
-            toUpdateFragment.setFileFragmentNameTwoUri(null);
+            toUpdateFragment.setFileFragmentNameTwo("null");
+            toUpdateFragment.setFileFragmentNameTwoUri("null");
         }else if (fileFragmentNameThree.equals(fileFragmentName)) {
-            toUpdateFragment.setFileFragmentNameThree(null);
-            toUpdateFragment.setFileFragmentNameThreeUri(null);
+            toUpdateFragment.setFileFragmentNameThree("null");
+            toUpdateFragment.setFileFragmentNameThreeUri("null");
         }else{
             Log.d(TAG, "updateFileFragment: Fail");
         }
 
-        if (toUpdateFragment.getFileFragmentNameOne() == null
-                &&toUpdateFragment.getFileFragmentNameTwo() == null
-                &&toUpdateFragment.getFileFragmentNameThree() == null ){
+        if (toUpdateFragment.getFileFragmentNameOne().equals("null")
+                &&toUpdateFragment.getFileFragmentNameTwo().equals("null")
+                &&toUpdateFragment.getFileFragmentNameThree().equals("null")){
             // delete toUpdateFragment from Database
             db.deleteFileFragment(toUpdateFragment);
         }else{

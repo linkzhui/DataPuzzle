@@ -129,9 +129,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void deleteFileFragment (FileFragment fileFragment) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(FileFragment.TABLE_NAME,
-                FileFragment.COLUMN_ID + " = ?",
-                new String[] { String.valueOf(fileFragment.getId()) });
+        String[] args = new String[]{ fileFragment.getFileOriginName() };
+        String updateQuery = FileFragment.COLUMN_FileFragments_Origin + " = ?";
+
+        db.delete(FileFragment.TABLE_NAME, updateQuery, args);
         db.close();
     }
 
@@ -141,33 +142,26 @@ public class DBHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
 
         if (fileFragment.getFileFragmentNameOne().equals("null")){
+            values.put(FileFragment.COLUMN_FileFragments_First, fileFragment.getFileFragmentNameOne());
+            values.put(FileFragment.COLUMN_FileFragments_First_Uri, fileFragment.getFileFragmentNameOneUri());
+        }
+
+        else if (fileFragment.getFileFragmentNameTwo().equals("null")){
+            values.put(FileFragment.COLUMN_FileFragments_Second, fileFragment.getFileFragmentNameTwo());
+            values.put(FileFragment.COLUMN_FileFragments_Second_Uri, fileFragment.getFileFragmentNameTwoUri());
+        }
+
+        else if (fileFragment.getFileFragmentNameThree().equals("null")){
             values.put(FileFragment.COLUMN_FileFragments_Third, fileFragment.getFileFragmentNameThree());
             values.put(FileFragment.COLUMN_FileFragments_Third_Uri, fileFragment.getFileFragmentNameThreeUri());
         }
 
-        if (fileFragment.getFileFragmentNameTwo().equals("null")){
-            values.put(FileFragment.COLUMN_FileFragments_Third, fileFragment.getFileFragmentNameThree());
-            values.put(FileFragment.COLUMN_FileFragments_Third_Uri, fileFragment.getFileFragmentNameThreeUri());
-        }
-
-        if (fileFragment.getFileFragmentNameThree().equals("null")){
-            values.put(FileFragment.COLUMN_FileFragments_Third, fileFragment.getFileFragmentNameThree());
-            values.put(FileFragment.COLUMN_FileFragments_Third_Uri, fileFragment.getFileFragmentNameThreeUri());
-        }
-
-        //String updateQuery = FileFragment.COLUMN_FileFragments_Origin + "=" + fileFragment.getFileOriginName();
         String updateQuery = FileFragment.COLUMN_FileFragments_Origin + " = ?";
+        String[] args = new String[]{fileFragment.getFileOriginName()};
 
+        db.update(FileFragment.TABLE_NAME, values, updateQuery, args);
 
-        //db.update(FileFragment.TABLE_NAME, values, updateQuery,null);
-        db.update(FileFragment.TABLE_NAME, values, updateQuery,new String[]{fileFragment.getFileOriginName()});
-
-        //FileFragment data = getFile(fileFragment.getId());
-
-
-        // updating row
-        //return db.update(FileFragment.TABLE_NAME, values, FileFragment.COLUMN_ID + " = ?",
-        //        new String[]{String.valueOf(fileFragment.getId())});
+        
     }
 
 
