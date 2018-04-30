@@ -87,7 +87,8 @@ public class CooperateModeFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(getActivity(),CooperFileDecMergeActivity.class);
+                startActivity(intent);
                 Toast.makeText(getContext(),"Dec/Merge button",Toast.LENGTH_SHORT).show();
             }
         });
