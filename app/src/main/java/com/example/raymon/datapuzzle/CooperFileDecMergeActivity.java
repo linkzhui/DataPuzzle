@@ -168,6 +168,7 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                                     notifyMessage +="Fragment "+fragNameArray[j]+" is missing,"+" you can get this fragment from "+fragReceiverArray[j]+".";
                                 }
                             }
+                            Log.i(TAG,notifyMessage);
                             Toast.makeText(getBaseContext(),notifyMessage,Toast.LENGTH_LONG).show();
                             Intent myIntent = new Intent(getBaseContext(), UserModeActivity.class);
                             myIntent.putExtra("username", username);

@@ -27,6 +27,7 @@ import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -66,7 +67,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
     String fileName;
     String fileURI;
-    boolean owner;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -160,6 +160,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 info.groupOwnerAddress.getHostAddress());
         serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
         serviceIntent.putExtra(FileTransferService.EXTRA_FILE_NAME, filename);
+        serviceIntent.putExtra(FileTransferService.EXTRA_DEVICE_NAME, device.deviceName);
 
         if(requestCode == CHOOSE_FILE_RESULT_InternalFile_CODE){
             String fileOriginName = data.getStringExtra("fileOriginName");
@@ -299,11 +300,13 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 File decryptFolder = new File(Environment.getExternalStoragePublicDirectory(
                         Environment.DIRECTORY_DOWNLOADS), "DataPuzzle");
 
-                final File f = new File(decryptFolder, fileName);
+                final File f = new File(decryptFolder,fileName);
 
                 File dirs = new File(f.getParent());
+                /***
                 if (!dirs.exists())
                     dirs.mkdirs();
+                 ***/
                 f.createNewFile();
                 Log.d(WiFiDirectCopActivity.TAG, "server: copying files " + f.toString());
 

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
+import com.example.raymon.datapuzzle.DBReceiverUpdate;
 
 /**
  * A service that process each file transfer request i.e Intent by opening a
@@ -39,6 +40,7 @@ public class FileTransferService extends IntentService {
     public static final String EXTRAS_GROUP_OWNER_PORT = "go_port";
     public static final String EXTRA_FILE_NAME = "file_name";
     public static final String EXTRA_File_Origin_Name = "file_origin_name";
+    public static final String EXTRA_DEVICE_NAME = "device_name";
 
 
     public FileTransferService(String name) {
@@ -62,6 +64,7 @@ public class FileTransferService extends IntentService {
             String host = intent.getExtras().getString(EXTRAS_GROUP_OWNER_ADDRESS);
             String fileName = intent.getExtras().getString(EXTRA_FILE_NAME);
             String fileOriginName = intent.getStringExtra(EXTRA_File_Origin_Name);
+            String deviceName = intent.getStringExtra(EXTRA_DEVICE_NAME);
             Socket socket = new Socket();
             int port = intent.getExtras().getInt(EXTRAS_GROUP_OWNER_PORT);
 
@@ -86,8 +89,12 @@ public class FileTransferService extends IntentService {
                 DeviceDetailFragment.copyFile(is, dos);
                 Log.d(WiFiDirectCopActivity.TAG, "Client: Data written");
                 if(!fileOriginName.equals("file_origin_name")){
+                    //update SQLite DataBase
                     updateFileFragmentDataBase(fileOriginName, fileName);
+                    //update Firebase
+                    DBReceiverUpdate.update(deviceName, fileOriginName, fileName);
                 }
+                //
                  //delte file from internal storage
                 //deltefile(fileUri);
             } catch (IOException e) {
