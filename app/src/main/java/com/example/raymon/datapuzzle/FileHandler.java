@@ -362,10 +362,14 @@ public class FileHandler {
         frag[1].close();
         outputFile.close();
         //TODO: Delete the fragment after file merge successful
-//        fileA.delete();
-//        fileB.delete();
-//        fragment1.delete();
-//        fragment2.delete();
+        if(fragment1.exists())
+        {
+            fragment1.delete();
+        }
+        if(fragment2.exists())
+        {
+            fragment2.delete();
+        }
         Log.i(TAG,"file merge completed");
         Log.i(TAG,"merged file length is: "+mergedFile.length());
         return mergedFile;

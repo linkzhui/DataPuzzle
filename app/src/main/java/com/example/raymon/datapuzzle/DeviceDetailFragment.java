@@ -332,6 +332,8 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 Intent intent = new Intent(context, UserModeActivity.class);
                 intent.putExtra("pageIndex",1 );
                 context.startActivity(intent);
+                intent.putExtra("username",UserModeActivity.username);
+                context.startActivity(intent);
 
             }
 

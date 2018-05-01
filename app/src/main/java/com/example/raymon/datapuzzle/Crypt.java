@@ -3,9 +3,17 @@ package com.example.raymon.datapuzzle;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.apache.commons.io.IOUtils;
 
@@ -28,6 +36,8 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 /**
  * Created by Jerry on 3/21/18.
@@ -112,10 +122,11 @@ public class Crypt {
         return encryptFile;
     }
 
-    public void AESFileDecryption (DecryptNode decryptNode) throws Exception {
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public void AESFileDecryption (final DecryptNode decryptNode) throws Exception {
 
-        String filename = decryptNode.fileName;
-        String TAG = "Decrypt progress";
+        final String filename = decryptNode.fileName;
+        final String TAG = "Decrypt progress";
         Context context=UserModeActivity.getContextOfApplication();
 
         Log.i(TAG,"begin file decrypt");
@@ -143,20 +154,18 @@ public class Crypt {
 
         //check if external storage is available for read and write
         String state = Environment.getExternalStorageState();
-        if(Environment.MEDIA_MOUNTED.equals(state))
-        {
-            Log.i(TAG,"external storage file write permission gained");
+        if(Environment.MEDIA_MOUNTED.equals(state)) {
+            Log.i(TAG, "external storage file write permission gained");
             //create output file and store the decrypt file into external storage with its original file name
             File decryptFolder = new File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS), "DataPuzzle");
             if (!decryptFolder.mkdirs()) {
                 Log.e(TAG, "Directory not created");
-            }
-            else{
-                Log.i(TAG,"Directory created successful");
+            } else {
+                Log.i(TAG, "Directory created successful");
             }
 
-            File decryptFile = new File(decryptFolder,filename);
+            File decryptFile = new File(decryptFolder, filename);
             BufferedOutputStream outFile = new BufferedOutputStream(new FileOutputStream(decryptFile));
 
 
@@ -175,10 +184,33 @@ public class Crypt {
             outFile.flush();
             outFile.close();
             System.out.println("File Decrypted.");
-            Toast.makeText(context,"Check the file under Download/DataPuzzle folder",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Check the file under Download/DataPuzzle folder", Toast.LENGTH_SHORT).show();
+            if (decryptNode.encryFile.exists())
+            {
+                decryptNode.encryFile.delete();
+            }
+            final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+            mDatabase.child("users").child(UserModeActivity.username).child("files").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String filenameWithoutExt = decryptNode.fileName.substring(0,decryptNode.fileName.indexOf('.'));
+                    if(dataSnapshot.hasChild(filenameWithoutExt))
+                    {
+                        mDatabase.child("users").child(UserModeActivity.username).child("files").child(filenameWithoutExt).setValue(null);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e(TAG,databaseError.getMessage());
+                }
+            });
             Intent myIntent = new Intent(context, UserModeActivity.class);
+            myIntent.putExtra("username",UserModeActivity.username);
             myIntent.putExtra("pageIndex",decryptNode.mode);
+            myIntent.setFlags(FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(myIntent);
+
         }
         else{
             Log.e(TAG,"external storage write permission failed");

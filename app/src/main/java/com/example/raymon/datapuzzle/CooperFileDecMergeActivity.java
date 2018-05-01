@@ -2,7 +2,9 @@ package com.example.raymon.datapuzzle;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +27,7 @@ import java.util.ArrayList;
 public class CooperFileDecMergeActivity extends AppCompatActivity {
 
     private ListView listView;
-    private DatabaseReference mDatabase;
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private String username = UserModeActivity.username;
     private ArrayAdapter<String> adapter;
     private String[] fragNameArray = new String[3];
@@ -40,6 +42,7 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
     private String originFileName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG,"onCreate Mode");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cooper_file_dec_merge);
         //Get the username
@@ -50,7 +53,6 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
         //Store all the available download file into fileList
         ArrayList<String> fileList = new ArrayList<>();
         getBookList(fileList);
-
         adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,fileList);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -60,9 +62,8 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
 
                 //implement file download and file upload
                 Toast.makeText(getBaseContext(),fileName+" is selected",Toast.LENGTH_SHORT).show();
-
-                mDatabase = FirebaseDatabase.getInstance().getReference();
                 mDatabase.child("users").child(username).child("files").child(fileName).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -155,11 +156,8 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            //TODO: finish decrypt, check if the file is merge/decrypt successful or not?
-                            //TODO: delete file metadata from SQLite and firebase
                         }
                         else{
-                            //TODO: reminder the user which fragment is missing and who have this fragment
                             String notifyMessage = "";
                             for(int j = 0;j<3;j++)
                             {
@@ -188,7 +186,9 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
     }
 
     private void getBookList(final ArrayList<String> list){
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        username = UserModeActivity.username;
+        Log.i(TAG,"username:"+username);
         mDatabase.child("users").child(username).child("files").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

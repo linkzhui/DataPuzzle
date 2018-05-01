@@ -144,7 +144,7 @@ public class GoogleDriveFileUploadActivity extends BaseActivity {
 
     // [START create_file_in_appfolder]
     private void createFileInAppFolder(final File fragment, final String filename) {
-        final Task<DriveFolder> appFolderTask = getDriveResourceClient().getRootFolder();
+        final Task<DriveFolder> appFolderTask = getDriveResourceClient().getAppFolder();
         final Task<DriveContents> createContentsTask = getDriveResourceClient().createContents();
         Tasks.whenAll(appFolderTask, createContentsTask)
                 .continueWithTask(new Continuation<Void, Task<DriveFile>>() {

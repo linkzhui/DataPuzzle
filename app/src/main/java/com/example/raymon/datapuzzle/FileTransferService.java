@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 import com.example.raymon.datapuzzle.DBReceiverUpdate;
 
 /**
@@ -96,7 +98,7 @@ public class FileTransferService extends IntentService {
                 }
                 //
                  //delte file from internal storage
-                //deltefile(fileUri);
+                deltefile(fileUri);
             } catch (IOException e) {
                 Log.e(WiFiDirectCopActivity.TAG, e.getMessage());
             } finally {
@@ -109,7 +111,14 @@ public class FileTransferService extends IntentService {
                             e.printStackTrace();
                         }
                     }
+
                 }
+
+                Intent myIntent = new Intent(context, UserModeActivity.class);
+                myIntent.putExtra("username",UserModeActivity.username);
+                myIntent.putExtra("pageIndex",1);
+                myIntent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(myIntent);
             }
 
         }
