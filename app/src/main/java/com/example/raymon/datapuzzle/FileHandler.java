@@ -310,7 +310,7 @@ public class FileHandler {
                 }
                 if(fragSize[0]<fragSize[1])
                 {
-                    outputStreamB.write(0^input1[bytesRead1]);
+                    outputStreamB.write(0^input1[bytesRead1-1]);
                 }
                 inputs[0].close();
                 inputs[1].close();
