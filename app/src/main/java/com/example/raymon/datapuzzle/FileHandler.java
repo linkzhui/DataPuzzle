@@ -297,23 +297,26 @@ public class FileHandler {
                 byte[] input0 = new byte[64];
                 byte[] input1 = new byte[64];
                 int bytesRead0;
-                int bytesRead1;
-                int count = 0;
+                int bytesRead1 = 0;
                 fileA = fragment1;
-                fileB = File.createTempFile("",fileName+".B",context.getCacheDir());
-                frag[0] = new BufferedInputStream(new FileInputStream(fileA));
-                frag[1] = new BufferedInputStream(new FileInputStream(fileB));
+                fileB = File.createTempFile(fileName,".B",context.getCacheDir());
                 BufferedOutputStream outputStreamB = new BufferedOutputStream(new FileOutputStream(fileB));
 
-                //fragment B's size should less or equal to fragment A's size
-                while ((bytesRead0 = inputs[0].read(input1)) != -1 && (bytesRead1 =inputs[1].read(input1)) != -1 ) {
-                    for(int i = 0;i<Math.min(bytesRead0,bytesRead1)&&count<fragSize[1];count++,i++) {
+                //fragment B's size should bigger or equal to fragment A's size
+                while ((bytesRead0 = inputs[0].read(input0)) != -1 && (bytesRead1 =inputs[1].read(input1)) != -1 ) {
+                    for(int i = 0;i<Math.min(bytesRead0,bytesRead1);i++) {
                         outputStreamB.write(input1[i]^input0[i]);
                     }
+                }
+                if(fragSize[0]<fragSize[1])
+                {
+                    outputStreamB.write(0^input1[bytesRead1]);
                 }
                 inputs[0].close();
                 inputs[1].close();
                 outputStreamB.close();
+                frag[0] = new BufferedInputStream(new FileInputStream(fileA));
+                frag[1] = new BufferedInputStream(new FileInputStream(fileB));
                 break;
             }
             case 3:
@@ -323,25 +326,25 @@ public class FileHandler {
                 byte[] input1 = new byte[64];
                 int bytesRead0;
                 int bytesRead1;
+                fileA = File.createTempFile(fileName,".A",context.getCacheDir());
                 fileB = fragment1;
-                fileA = File.createTempFile("",fileName+".A",context.getCacheDir());
-                frag[0] = new BufferedInputStream(new FileInputStream(fileA));
-                frag[1] = new BufferedInputStream(new FileInputStream(fileB));
                 BufferedOutputStream outputStreamA = new BufferedOutputStream(new FileOutputStream(fileA));
-                while ((bytesRead0 = inputs[0].read(input1)) != -1 && (bytesRead1 =inputs[1].read(input1)) != -1 ) {
+                while ((bytesRead0 = inputs[0].read(input0)) != -1 && (bytesRead1 =inputs[1].read(input1)) != -1 ) {
                     for(int i = 0;i<Math.min(bytesRead0,bytesRead1);i++) {
                         outputStreamA.write(input1[i]^input0[i]);
                     }
                 }
                 //if fragment C size is bigger than fragment B size,
                 //then we fragment A need to read one more byte
-                if(fragment2.length()>fragment1.length())
-                {
-                    outputStreamA.write(inputs[1].read());
-                }
+//                if(fragment2.length()>fragment1.length())
+//                {
+//                    outputStreamA.write(inputs[1].read());
+//                }
                 inputs[0].close();
                 inputs[1].close();
                 outputStreamA.close();
+                frag[0] = new BufferedInputStream(new FileInputStream(fileA));
+                frag[1] = new BufferedInputStream(new FileInputStream(fileB));
                 break;
             }
         }

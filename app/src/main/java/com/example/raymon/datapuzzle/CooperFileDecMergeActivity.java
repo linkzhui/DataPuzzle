@@ -94,7 +94,17 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                                 fragmentFoundCount++;
                                 fragmentInfos.add(new FragmentInfo(fragment,index));
                                 fragExist[index] = true;
-                                Log.i(TAG,fragNameArray[index]+" is founded");
+                                Log.i(TAG,fragNameArray[index]+" is founded in internal");
+                            }
+                            else{
+                                fragment = externalFileSearch(fragNameArray[index]);
+                                if(fragment!=null)
+                                {
+                                    fragmentFoundCount++;
+                                    fragmentInfos.add(new FragmentInfo(fragment,index));
+                                    fragExist[index] = true;
+                                    Log.i(TAG,fragNameArray[index]+" is founded in external");
+                                }
                             }
                             index++;
                         }
@@ -121,7 +131,7 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                                     //fragment A, C founded
                                     //XOR mode 2
                                     try {
-                                        mergedFile = fileHandler.mergeCooper(2,fragmentInfos.get(0).fragment,fragmentInfos.get(2).fragment,fragSizeArray,originFileName);
+                                        mergedFile = fileHandler.mergeCooper(2,fragmentInfos.get(0).fragment,fragmentInfos.get(1).fragment,fragSizeArray,originFileName);
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }
@@ -132,7 +142,7 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                                 //fragment b, c founded
                                 //XOR mode 3
                                 try {
-                                    mergedFile = fileHandler.mergeCooper(3,fragmentInfos.get(1).fragment,fragmentInfos.get(2).fragment,fragSizeArray,originFileName);
+                                    mergedFile = fileHandler.mergeCooper(3,fragmentInfos.get(0).fragment,fragmentInfos.get(1).fragment,fragSizeArray,originFileName);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
