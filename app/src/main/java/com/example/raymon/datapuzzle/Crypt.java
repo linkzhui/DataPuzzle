@@ -177,7 +177,6 @@ public class Crypt {
             System.out.println("File Decrypted.");
             Toast.makeText(context,"Check the file under Download/DataPuzzle folder",Toast.LENGTH_SHORT).show();
             Intent myIntent = new Intent(context, UserModeActivity.class);
-            myIntent.putExtra("username", UserModeActivity.username);
             myIntent.putExtra("pageIndex",decryptNode.mode);
             context.startActivity(myIntent);
         }
