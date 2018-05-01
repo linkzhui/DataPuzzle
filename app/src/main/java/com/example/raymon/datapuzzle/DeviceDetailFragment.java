@@ -325,11 +325,9 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         protected void onPostExecute(String result) {
             if (result != null) {
                 statusText.setText("File copied - " + result);
-                //Intent intent = new Intent();
-                //intent.setAction(android.content.Intent.ACTION_VIEW);
-                //intent.setDataAndType(Uri.parse("file://" + result), "image/*");
-                //context.startActivity(intent);
+                // back to UserMode Activity in Copperate Mode (Value 1)
                 Intent intent = new Intent(context, UserModeActivity.class);
+                intent.putExtra("pageIndex",1 );
                 context.startActivity(intent);
 
             }
