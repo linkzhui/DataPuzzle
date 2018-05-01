@@ -18,7 +18,7 @@ public class DBReceiverUpdate {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.hasChild(originalFileName))
                 {
-                    for(DataSnapshot child:dataSnapshot.child("originalFileName").child("fragments").getChildren())
+                    for(DataSnapshot child:dataSnapshot.child(originalFileName).child("fragments").getChildren())
                     {
                         if(child.child("fragName").getValue(String.class).equals(fragmentName))
                         {
