@@ -122,6 +122,15 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void deleteFileFragmentbyName (String originFileName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String[] args = new String[]{ originFileName };
+        String updateQuery = FileFragment.COLUMN_FileFragments_Origin + " = ?";
+
+        db.delete(FileFragment.TABLE_NAME, updateQuery, args);
+        db.close();
+    }
+
     public void updateFileFragment(FileFragment fileFragment) {
         SQLiteDatabase db = this.getWritableDatabase();
 
