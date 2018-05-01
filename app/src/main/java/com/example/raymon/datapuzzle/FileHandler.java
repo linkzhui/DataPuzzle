@@ -2,26 +2,21 @@ package com.example.raymon.datapuzzle;
 
 import android.content.Context;
 import android.util.Log;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.raymon.datapuzzle.DBHelper;
 /**
  * Created by Jerry on 3/21/18.
  */
@@ -84,7 +79,7 @@ public class FileHandler {
         {
             // If the mode is Individual, create the temp fragment file to store the result of split file
             // If the mode is Cooperate, create the file store in internal storage
-            fragment[subfileIndex] = mode.equals("Individual")?  File.createTempFile("", filename+"."+subfileIndex,context.getCacheDir()):new File(context.getFilesDir(),filename+"."+subfileIndex);
+            fragment[subfileIndex] = mode.equals("Individual")?  File.createTempFile(filename, "."+subfileIndex,context.getCacheDir()):new File(context.getFilesDir(),filename+"."+subfileIndex);
             fragName[subfileIndex] = filename+"."+subfileIndex;
             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fragment[subfileIndex]));
             Log.i(TAG,"fragment name: "+fragment[subfileIndex]);
@@ -266,12 +261,15 @@ public class FileHandler {
             Log.i(TAG,"merged file name: "+mergedFile.getName());
             Log.i(TAG,"merged file size: "+mergedFile.length()+"");
         }
-        Crypt.DecryptNode decryptNode = new Crypt.DecryptNode(origFileName,mergedFile,secretKey);
+        Crypt.DecryptNode decryptNode = new Crypt.DecryptNode(origFileName,mergedFile,secretKey,0);
         return decryptNode;
 
     }
 
-    public File mergeCooper(int mode, File fragment1, File fragment2,int[] fragSize,String fileName) throws IOException {
+    public File mergeCooper(int mode, File fragment1, File fragment2,long[] fragSize,String fileName) throws IOException {
+        String TAG = "Cooperate File Merge";
+        Log.i(TAG,"Begin file merge");
+        Log.i(TAG,"file fragement 1 is: "+fragment1.getName()+" , framgnment 2 is: "+fragment2.getName());
         //Fragment 1 size <= Fragment 2 size
         //fragment A, B, C (XOR)
         //XOR mode 1: A, B
@@ -365,7 +363,8 @@ public class FileHandler {
 //        fileB.delete();
 //        fragment1.delete();
 //        fragment2.delete();
-
+        Log.i(TAG,"file merge completed");
+        Log.i(TAG,"merged file length is: "+mergedFile.length());
         return mergedFile;
 
     }

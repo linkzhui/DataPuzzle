@@ -121,6 +121,7 @@ public class IndividualModeFragment extends Fragment {
                     //call AsyncTask.get() for Main thread UI to wait until the async task is finished.
                     new EncryptInBG().execute(cryptNode).get();
 
+                    Log.i(TAG,"begin file split");
                     FileHandler.FileHandlerInfo fileHandlerInfo = new FileHandler.FileHandlerInfo(result[0],encryptFile,username);
                     GoogleDriveFileUploadActivity.FileUploadInfo fileUploadInfo = fileHandle.split(fileHandlerInfo,"Individual");
 
@@ -218,6 +219,7 @@ public class IndividualModeFragment extends Fragment {
         protected void onPostExecute(Boolean result) {
             if(result)
             {
+
                 Toast.makeText(getContext(),"Encryption completed.",Toast.LENGTH_LONG).show();
             }
            else{

@@ -1,6 +1,7 @@
 package com.example.raymon.datapuzzle;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,7 +24,7 @@ import com.google.firebase.database.ValueEventListener;
  * them to choose the file location.
  */
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private EditText mUsernameEditText;
     private EditText mPasswordEditText;
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                             //Intent myIntent = new Intent(MainActivity.this, GooDriveConnection.class);
                             Intent myIntent = new Intent(MainActivity.this, UserModeActivity.class);
                             myIntent.putExtra("username", username);
+                            myIntent.putExtra("pageIndex",0);
                             startActivity(myIntent);
 
                         } else {

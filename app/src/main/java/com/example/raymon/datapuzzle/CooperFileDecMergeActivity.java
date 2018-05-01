@@ -26,11 +26,11 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
 
     private ListView listView;
     private DatabaseReference mDatabase;
-    private String username;
+    private String username = UserModeActivity.username;
     private ArrayAdapter<String> adapter;
     private String[] fragNameArray = new String[3];
     private String[] fragReceiverArray = new String[3];
-    private int[] fragSizeArray = new int[3];
+    private long[] fragSizeArray = new long[3];
     private boolean[] fragExist = new boolean[3];
     private String TAG = "Cooper Mode File Merge/Decry Activity";
     private String secretkey;
@@ -44,8 +44,7 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cooper_file_dec_merge);
         //Get the username
         Intent intent = getIntent();
-        username = intent.getStringExtra("username");
-        Log.e("username",username);
+        Log.i(TAG,"username: "+username);
         secretkey = intent.getStringExtra("secret key");
         listView = findViewById(R.id.listViewResults);
         //Store all the available download file into fileList
@@ -72,11 +71,11 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                         {
                             String fragmentName = child.child("fragName").getValue(String.class);
                             String receiver = child.child("receiver").getValue(String.class);
-                            String fragSize = child.child("fragSize").getValue(String.class);
+                            Long fragSize = child.child("fragSize").getValue(Long.class);
                             Log.i(TAG,"fragment name: "+fragmentName);
                             fragNameArray[i]=fragmentName;
                             fragReceiverArray[i]=receiver;
-                            fragSizeArray[i] = Integer.parseInt(fragSize);
+                            fragSizeArray[i] = fragSize;
                             i++;
                         }
 
@@ -87,7 +86,7 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                         int fragmentFoundCount = 0;
                         //the index in the fragment Name array, which is obtained from the firebase database
                         int index = 0;
-                        while(index<3||fragmentFoundCount<2)
+                        while(index<3 && fragmentFoundCount<2)
                         {
                             File fragment = internalFileSearch(fragNameArray[index]);
                             if(fragment!=null)
@@ -139,7 +138,13 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                                 }
                             }
 
-                            new Crypt.DecryptNode(originFileName,mergedFile,secretkey);
+                            Log.i(TAG,"Begin file merge");
+                            Crypt crypt = new Crypt();
+                            try {
+                                crypt.AESFileDecryption(new Crypt.DecryptNode(originFileName,mergedFile,secretkey,1));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             //TODO: finish decrypt, check if the file is merge/decrypt successful or not?
                             //TODO: delete file metadata from SQLite and firebase
                         }
@@ -154,6 +159,11 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
                                 }
                             }
                             Toast.makeText(getBaseContext(),notifyMessage,Toast.LENGTH_LONG).show();
+                            Intent myIntent = new Intent(getBaseContext(), UserModeActivity.class);
+                            myIntent.putExtra("username", username);
+                            //return to cooperate mode
+                            myIntent.putExtra("pageIndex",1);
+                            startActivity(myIntent);
                         }
                     }
 
@@ -192,17 +202,6 @@ public class CooperFileDecMergeActivity extends AppCompatActivity {
         return;
     }
 
-    private File searchFile(String fname)
-    {
-        File result = internalFileSearch(fname);
-        if(result==null)
-        {
-            //the fragment is not exist in the internal storage, search if the fragment is exist in the external storage
-            result = externalFileSearch(fname);
-        }
-        return result;
-
-    }
     private File internalFileSearch(String fname)
     {
         //search the file fragment is existed in the internal storage or not?
