@@ -52,6 +52,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * A fragment that manages a particular peer and allows interaction with device
  * i.e. setting up network connection and transferring data.
@@ -146,28 +148,33 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         // User has picked an image. Transfer it to group owner i.e peer using
         // FileTransferService.
 
-        Uri uri = data.getData();
-        String filename = getFileName(uri);
-        //todo: write file name
-        TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
-        statusText.setText("Sending: " + uri);
-        Log.d(WiFiDirectCopActivity.TAG, "Intent----------- " + uri);
+        if(RESULT_OK == resultCode){
+            Uri uri = data.getData();
+            String filename = getFileName(uri);
+            //todo: write file name
+            TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
+            statusText.setText("Sending: " + uri);
+            Log.d(WiFiDirectCopActivity.TAG, "Intent----------- " + uri);
 
-        Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
-        serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
-        serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
-        serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
-                info.groupOwnerAddress.getHostAddress());
-        serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
-        serviceIntent.putExtra(FileTransferService.EXTRA_FILE_NAME, filename);
-        serviceIntent.putExtra(FileTransferService.EXTRA_DEVICE_NAME, device.deviceName);
+            Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
+            serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
+            serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
+            serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
+                    info.groupOwnerAddress.getHostAddress());
+            serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
+            serviceIntent.putExtra(FileTransferService.EXTRA_FILE_NAME, filename);
+            serviceIntent.putExtra(FileTransferService.EXTRA_DEVICE_NAME, device.deviceName);
 
-        if(requestCode == CHOOSE_FILE_RESULT_InternalFile_CODE){
-            String fileOriginName = data.getStringExtra("fileOriginName");
-            serviceIntent.putExtra(FileTransferService.EXTRA_File_Origin_Name, fileOriginName);
+            if(requestCode == CHOOSE_FILE_RESULT_InternalFile_CODE){
+                String fileOriginName = data.getStringExtra("fileOriginName");
+                serviceIntent.putExtra(FileTransferService.EXTRA_File_Origin_Name, fileOriginName);
+            }
+
+            getActivity().startService(serviceIntent);
+
         }
 
-        getActivity().startService(serviceIntent);
+
     }
 
     public String getFileName(Uri uri) {
