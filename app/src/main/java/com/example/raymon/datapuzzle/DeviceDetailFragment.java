@@ -69,6 +69,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
     String fileName;
     String fileURI;
+    String deviceName;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -163,7 +164,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                     info.groupOwnerAddress.getHostAddress());
             serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
             serviceIntent.putExtra(FileTransferService.EXTRA_FILE_NAME, filename);
-            serviceIntent.putExtra(FileTransferService.EXTRA_DEVICE_NAME, device.deviceName);
+            serviceIntent.putExtra(FileTransferService.EXTRA_DEVICE_NAME, deviceName);
 
             if(requestCode == CHOOSE_FILE_RESULT_InternalFile_CODE){
                 String fileOriginName = data.getStringExtra("fileOriginName");
@@ -297,8 +298,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 Socket client = serverSocket.accept();
                 Log.d(WiFiDirectCopActivity.TAG, "Server: connection done");
 
-                // todo: change the saving directory to extrenal file
-
                 //InputStream inputstream = client.getInputStream();
                 BufferedInputStream in = new BufferedInputStream(client.getInputStream());
                 DataInputStream d = new DataInputStream(in);
@@ -310,10 +309,9 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 final File f = new File(decryptFolder,fileName);
 
                 File dirs = new File(f.getParent());
-                /***
                 if (!dirs.exists())
                     dirs.mkdirs();
-                 ***/
+
                 f.createNewFile();
                 Log.d(WiFiDirectCopActivity.TAG, "server: copying files " + f.toString());
 
@@ -336,12 +334,11 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
             if (result != null) {
                 statusText.setText("File copied - " + result);
                 // back to UserMode Activity in Copperate Mode (Value 1)
+                ((DeviceActionListener) context).disconnect();
                 Intent intent = new Intent(context, UserModeActivity.class);
                 intent.putExtra("pageIndex",1 );
-                context.startActivity(intent);
                 intent.putExtra("username",UserModeActivity.username);
                 context.startActivity(intent);
-
             }
 
         }
@@ -374,9 +371,10 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         return true;
     }
 
-    public void getInfo(String filename, String fileURI, String mode){
+    public void getInfo(String filename, String fileURI, String deviceName){
         this.fileName = filename;
         this.fileURI = fileURI;
+        this.deviceName = deviceName;
     }
 
 }
