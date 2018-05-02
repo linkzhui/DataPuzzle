@@ -127,7 +127,7 @@ public class Crypt {
 
         final String filename = decryptNode.fileName;
         final String TAG = "Decrypt progress";
-        Context context=UserModeActivity.getContextOfApplication();
+        final Context context=UserModeActivity.getContextOfApplication();
 
         Log.i(TAG,"begin file decrypt");
         //**Use user's secret key input to generate secret key for cipher to encrypt/decrypt the message
@@ -197,6 +197,12 @@ public class Crypt {
                     if(dataSnapshot.hasChild(filenameWithoutExt))
                     {
                         mDatabase.child("users").child(UserModeActivity.username).child("files").child(filenameWithoutExt).setValue(null);
+                        if(decryptNode.mode==1)
+                        {
+                            //in cooperate mode, merge file successful, delete the file information in sqlite
+                            DBHelper dbHelper = new DBHelper(context);
+                            dbHelper.deleteFilebyName(filenameWithoutExt);
+                        }
                     }
                 }
 
@@ -205,6 +211,7 @@ public class Crypt {
                     Log.e(TAG,databaseError.getMessage());
                 }
             });
+
             Intent myIntent = new Intent(context, UserModeActivity.class);
             myIntent.putExtra("username",UserModeActivity.username);
             myIntent.putExtra("pageIndex",decryptNode.mode);
