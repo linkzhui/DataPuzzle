@@ -29,10 +29,13 @@ import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.example.raymon.datapuzzle.DeviceListFragment.DeviceActionListener;
 
@@ -87,8 +90,8 @@ public class WiFiDirectCopActivity extends Activity implements ChannelListener, 
         manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         channel = manager.initialize(this, getMainLooper(), null);
 
-        Button enable_wifi_btn = findViewById(R.id.bt_direct_enable);
-        Button discover_peers_btn = findViewById(R.id.bt_discover_peers);
+        ImageButton enable_wifi_btn = findViewById(R.id.bt_direct_enable);
+        ImageButton discover_peers_btn = findViewById (R.id.bt_discover_peers);
 
         enable_wifi_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,8 +138,6 @@ public class WiFiDirectCopActivity extends Activity implements ChannelListener, 
 
             }
         });
-
-
 
     }
 

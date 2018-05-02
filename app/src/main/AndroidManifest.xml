@@ -48,8 +48,12 @@
             android:theme="@android:style/Theme.Holo.Light.DarkActionBar" />
         <activity android:name=".IndividualFileDownloadActivity" />
         <activity android:name=".GoogleDriveFileDownloadActivity" />
-        <activity android:name=".ShowFileFragmentListActivity" />
-        <activity android:name=".WiFiDirectCopActivity" />
+        <activity
+            android:name=".ShowFileFragmentListActivity"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"/>
+        <activity
+            android:name=".WiFiDirectCopActivity"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"/>
 
         <service
             android:name=".FileTransferService"

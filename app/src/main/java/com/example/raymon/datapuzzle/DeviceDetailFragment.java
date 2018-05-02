@@ -229,6 +229,10 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         } else if (info.groupFormed) {
             // The other device acts as the client. In this case, we enable the
             // get file button.
+            mContentView.findViewById(R.id.transfer_file_text).setVisibility(View.VISIBLE);
+            mContentView.findViewById(R.id.transfer_file_seperate_line).setVisibility(View.VISIBLE);
+            mContentView.findViewById(R.id.transfer_file_title_text).setVisibility(View.VISIBLE);
+            mContentView.findViewById(R.id.txt_select_file_fragment).setVisibility(View.VISIBLE);
             mContentView.findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
             mContentView.findViewById(R.id.checkbox_owner).setVisibility(View.VISIBLE);
             ((TextView) mContentView.findViewById(R.id.status_text)).setText(getResources()
@@ -267,6 +271,10 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         view.setText(R.string.empty);
         view = (TextView) mContentView.findViewById(R.id.status_text);
         view.setText(R.string.empty);
+        mContentView.findViewById(R.id.transfer_file_text).setVisibility(View.GONE);
+        mContentView.findViewById(R.id.transfer_file_seperate_line).setVisibility(View.GONE);
+        mContentView.findViewById(R.id.transfer_file_title_text).setVisibility(View.GONE);
+        mContentView.findViewById(R.id.txt_select_file_fragment).setVisibility(View.GONE);
         mContentView.findViewById(R.id.btn_start_client).setVisibility(View.GONE);
         mContentView.findViewById(R.id.checkbox_owner).setVisibility(View.GONE);
         this.getView().setVisibility(View.GONE);

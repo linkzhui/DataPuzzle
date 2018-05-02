@@ -4,23 +4,78 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:id="@+id/linearLayout1"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Discover Peers"
-            android:id = "@+id/bt_discover_peers" />
+            android:gravity="center"
+            android:layout_margin="10dp"
+            android:orientation="horizontal">
 
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="50dp"
+                android:clickable="false"
+                android:text="STEP1: " />
+
+            <ImageButton
+                android:id = "@+id/bt_direct_enable"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:text="Enable Wifi Direct"
+                android:src="@drawable/switchbutton"
+                android:adjustViewBounds="true"
+                android:layout_centerHorizontal="true"
+                android:cropToPadding="false"
+                android:background="#00000000"
+                android:scaleType="fitXY"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="Enable Wifi Direct" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Enable Wifi Direct"
-            android:id = "@+id/bt_direct_enable" />
+            android:gravity="center"
+            android:layout_margin="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="50dp"
+                android:clickable="false"
+                android:text="STEP2: " />
+
+            <ImageButton
+                android:id = "@+id/bt_discover_peers"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/discover"
+                android:adjustViewBounds="true"
+                android:layout_centerHorizontal="true"
+                android:cropToPadding="false"
+                android:background="#00000000"
+                android:scaleType="fitXY"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="Discover Peers" />
+        </LinearLayout>
 
         <fragment
             class="com.example.raymon.datapuzzle.DeviceListFragment"
