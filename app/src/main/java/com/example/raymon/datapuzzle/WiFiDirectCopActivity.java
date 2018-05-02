@@ -180,7 +180,7 @@ public class WiFiDirectCopActivity extends Activity implements ChannelListener, 
         DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager()
                 .findFragmentById(R.id.frag_detail);
         fragment.showDetails(device);
-        fragment.getInfo(fileFragmentName, fileFragmentUri, mode);
+        fragment.getInfo(fileFragmentName, fileFragmentUri, device.deviceName);
 
     }
 

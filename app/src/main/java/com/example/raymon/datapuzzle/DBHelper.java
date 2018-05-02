@@ -141,12 +141,12 @@ public class DBHelper extends SQLiteOpenHelper {
             values.put(FileFragment.COLUMN_FileFragments_First_Uri, fileFragment.getFileFragmentNameOneUri());
         }
 
-        else if (fileFragment.getFileFragmentNameTwo().equals("null")){
+        if (fileFragment.getFileFragmentNameTwo().equals("null")){
             values.put(FileFragment.COLUMN_FileFragments_Second, fileFragment.getFileFragmentNameTwo());
             values.put(FileFragment.COLUMN_FileFragments_Second_Uri, fileFragment.getFileFragmentNameTwoUri());
         }
 
-        else if (fileFragment.getFileFragmentNameThree().equals("null")){
+        if (fileFragment.getFileFragmentNameThree().equals("null")){
             values.put(FileFragment.COLUMN_FileFragments_Third, fileFragment.getFileFragmentNameThree());
             values.put(FileFragment.COLUMN_FileFragments_Third_Uri, fileFragment.getFileFragmentNameThreeUri());
         }
