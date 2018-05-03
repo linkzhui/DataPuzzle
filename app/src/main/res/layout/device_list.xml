@@ -33,14 +33,14 @@
             android:src="@drawable/machine" />
 
         <LinearLayout
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="fill_parent">
             <TextView
                 android:id="@+id/my_name"
                 android:layout_width="fill_parent"
-                android:layout_height="0dp"
+                android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical" />
             <TextView

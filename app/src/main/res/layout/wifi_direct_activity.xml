@@ -81,7 +81,7 @@
             class="com.example.raymon.datapuzzle.DeviceListFragment"
             android:id="@+id/frag_list"
             android:layout_width="match_parent"
-            android:layout_height="200dp">
+            android:layout_height="180dp">
             <!-- Preview: layout=@layout/row_devices -->
         </fragment>
 

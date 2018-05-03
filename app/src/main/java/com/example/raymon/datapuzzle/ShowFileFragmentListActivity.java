@@ -13,28 +13,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ShowFileFragmentListActivity extends AppCompatActivity {
+public class ShowFileFragmentListActivity extends Activity {
 
     FileFragmentListAdapter listAdapter;
     ExpandableListView expListView;
     List<String> listDataHeader;
     HashMap<String, List<String>> listDataChild;
     HashMap<String, List<String>> listURIChild;
-
-    private List<FileFragment> fileFragmentsList = new ArrayList<>();
     private DBHelper db;
-
-    String mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            mode = extras.getString("mode");
-        }
-
 
         setContentView(R.layout.activity_show_file_fragment_list);
 

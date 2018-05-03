@@ -93,14 +93,15 @@
                     xmlns:android="http://schemas.android.com/apk/res/android"
                     android:orientation="horizontal"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="30dp"
+                    android:layout_marginLeft="65dp"
+                    android:layout_marginTop="5dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="30dp">
 
                     <ImageButton
                         android:id = "@+id/btn_start_client"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:text="Enable Wifi Direct"
                         android:src="@drawable/folder"
                         android:adjustViewBounds="true"
@@ -111,6 +112,8 @@
 
                     <TextView
                         android:id = "@+id/txt_select_file_fragment"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="7dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:clickable="false"
