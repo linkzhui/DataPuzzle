@@ -7,17 +7,20 @@
     android:visibility="gone">
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_marginTop="0dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_marginTop="0dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <LinearLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_marginTop="0dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -27,13 +30,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
-                    android:text="@string/disconnect_peer_button" />
+                    android:text="@string/disconnect_peer_button"
+                    style="?android:attr/buttonStyleSmall"/>
 
                 <Button
                     android:id="@+id/btn_connect"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/connect_peer_button" />
+                    android:text="@string/connect_peer_button"
+                    style="?android:attr/buttonStyleSmall"/>
 
             </LinearLayout>
 

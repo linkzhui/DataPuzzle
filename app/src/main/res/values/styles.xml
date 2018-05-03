@@ -8,4 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="SmallButton" parent="@android:style/Widget.Button.Small">
+        <!-- Customize your theme here. -->
+    </style>
+
 </resources>

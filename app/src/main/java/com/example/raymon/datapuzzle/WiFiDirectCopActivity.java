@@ -141,6 +141,14 @@ public class WiFiDirectCopActivity extends Activity implements ChannelListener, 
 
     }
 
+    @Override
+    public void onBackPressed(){
+        ((DeviceActionListener) this).disconnect();
+        super.onBackPressed();
+        finish();
+    }
+
+
     /** register the BroadcastReceiver with the intent values to be matched */
     @Override
     public void onResume() {
@@ -154,6 +162,8 @@ public class WiFiDirectCopActivity extends Activity implements ChannelListener, 
         super.onPause();
         unregisterReceiver(receiver);
     }
+
+
 
     /**
      * Remove all peers and clear all fields. This is called on
