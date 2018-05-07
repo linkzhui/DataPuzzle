@@ -79,7 +79,7 @@ public abstract class BaseActivity extends Activity {
                     // Sign-in may fail or be cancelled by the user. For this sample, sign-in is
                     // required and is fatal. For apps where sign-in is optional, handle
                     // appropriately
-                    Log.e(TAG, "Sign-in failed.");
+                    Log.e(TAG, "Sign-in activity failed, Sign-in failed.");
                     finish();
                     return;
                 }

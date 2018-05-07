@@ -8,32 +8,22 @@ import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import org.apache.commons.io.IOUtils;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.security.AlgorithmParameters;
-import java.security.MessageDigest;
-import java.security.SecureRandom;
 import java.security.spec.KeySpec;
-import java.util.Arrays;
-
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -107,17 +97,15 @@ public class Crypt {
         Log.i(TAG,"File Encrypted.");
         Log.i(TAG,"Encrypt file size: "+encryptFile.length()+" byte");
 
-
-        //TODO: Delete the Original file after the file encrypt, uncomment this area of code
-//        File originalFile = new File(uri.getPath());
-//        boolean deleteOrignalFile = originalFile.delete();
-//        if(deleteOrignalFile)
-//        {
-//            Log.i(TAG,"Original file delete successful!");
-//        }
-//        else{
-//            Log.e(TAG,"Delete original file failed");
-//        }
+        File originalFile = new File(uri.getPath());
+        boolean deleteOrignalFile = originalFile.delete();
+        if(deleteOrignalFile)
+        {
+            Log.i(TAG,"Original file delete successful!");
+        }
+        else{
+            Log.e(TAG,"Delete original file failed");
+        }
 
         return encryptFile;
     }
