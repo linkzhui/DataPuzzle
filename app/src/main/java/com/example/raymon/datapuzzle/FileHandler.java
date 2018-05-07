@@ -79,7 +79,7 @@ public class FileHandler {
         {
             // If the mode is Individual, create the temp fragment file to store the result of split file
             // If the mode is Cooperate, create the file store in internal storage
-            fragment[subfileIndex] = mode.equals("Individual")?  File.createTempFile(filename, "."+subfileIndex,context.getCacheDir()):new File(context.getFilesDir(),filename+"."+subfileIndex);
+            fragment[subfileIndex] = mode.equals("Individual")?  new File(context.getFilesDir(),filename+"."+subfileIndex):new File(context.getFilesDir(),filename+"."+subfileIndex);
             fragName[subfileIndex] = filename+"."+subfileIndex;
             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fragment[subfileIndex]));
             Log.i(TAG,"fragment name: "+fragment[subfileIndex]);
@@ -111,11 +111,14 @@ public class FileHandler {
         else{
             in.close();
             Log.i(TAG,"file split completed successful");
+            if(fileHandlerInfo.encryptFile.exists())
+            {
+                boolean result = fileHandlerInfo.encryptFile.delete();
+                Log.i(TAG,"delete the encrypt file successful? "+result);
+            }
             switch (mode)
             {
                 case "Cooperate":
-
-                    //TODO: implement XOR right there:*************
 
                     fragment[2] = new File(context.getFilesDir(),filename+".XOR");
                     fragName[2] = filename+".XOR";
@@ -260,6 +263,8 @@ public class FileHandler {
             Log.i(TAG,"file merge successful");
             Log.i(TAG,"merged file name: "+mergedFile.getName());
             Log.i(TAG,"merged file size: "+mergedFile.length()+"");
+            fragments.get(0).delete();
+            fragments.get(1).delete();
         }
         Crypt.DecryptNode decryptNode = new Crypt.DecryptNode(origFileName,mergedFile,secretKey,0);
         return decryptNode;
