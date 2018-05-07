@@ -19,9 +19,9 @@ public class SlideAdapter extends PagerAdapter {
     LayoutInflater inflater;
 
     int[] imageList = {
-            R.drawable.calendar,
-            R.drawable.growth,
-            R.drawable.planning
+            R.drawable.login,
+            R.drawable.cooperate,
+            R.drawable.wifi
     };
 
     String[] titleList = {
@@ -31,9 +31,9 @@ public class SlideAdapter extends PagerAdapter {
     };
 
     String[] descList = {
-            "No. 1 desc",
-            "No. 2 desc",
-            "No. 3 desc"
+            "User Log In Page",
+            "Cooperate Mode Page",
+            "WiFi Direct Transfer File"
     };
 
     public SlideAdapter(Context context) {
