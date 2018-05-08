@@ -43,6 +43,9 @@ public class FileTransferService extends IntentService {
     public static final String EXTRA_FILE_NAME = "file_name";
     public static final String EXTRA_File_Origin_Name = "file_origin_name";
     public static final String EXTRA_DEVICE_NAME = "device_name";
+    public static final String EXTRA_FILE_STOAGEORIGIN = "storage_origin";
+
+
 
 
     public FileTransferService(String name) {
@@ -65,10 +68,15 @@ public class FileTransferService extends IntentService {
             String fileUri = intent.getExtras().getString(EXTRAS_FILE_PATH);
             String host = intent.getExtras().getString(EXTRAS_GROUP_OWNER_ADDRESS);
             String fileName = intent.getExtras().getString(EXTRA_FILE_NAME);
-            String fileOriginName = intent.getStringExtra(EXTRA_File_Origin_Name);
             String deviceName = intent.getStringExtra(EXTRA_DEVICE_NAME);
-            Socket socket = new Socket();
             int port = intent.getExtras().getInt(EXTRAS_GROUP_OWNER_PORT);
+            String fileOrigin = intent.getStringExtra(EXTRA_FILE_STOAGEORIGIN);
+            String fileOriginName = this.EXTRA_File_Origin_Name;
+            if(fileOrigin == "internal"){
+                fileOriginName = intent.getStringExtra(EXTRA_File_Origin_Name);
+            }
+            Socket socket = new Socket();
+
 
             try {
                 Log.d(WiFiDirectCopActivity.TAG, "Opening client socket - ");

@@ -60,7 +60,7 @@ import static android.app.Activity.RESULT_OK;
  */
 public class DeviceDetailFragment extends Fragment implements ConnectionInfoListener {
 
-    protected static final int CHOOSE_FILE_RESULT_CODE = 20;
+    protected static final int CHOOSE_FILE_RESULT_ExternalFile_CODE = 20;
     protected static final int CHOOSE_FILE_RESULT_InternalFile_CODE = 21;
     private View mContentView = null;
     private WifiP2pDevice device;
@@ -134,7 +134,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                             // if initital by the not-owner
                             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                             intent.setType("*/*");
-                            startActivityForResult(intent, CHOOSE_FILE_RESULT_CODE);
+                            startActivityForResult(intent, CHOOSE_FILE_RESULT_ExternalFile_CODE);
                         }
 
                     }
@@ -146,17 +146,18 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         // User has picked an image. Transfer it to group owner i.e peer using
         // FileTransferService.
 
         if(RESULT_OK == resultCode){
+
             Uri uri = data.getData();
             String filename = getFileName(uri);
-            //todo: write file name
             TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
             statusText.setText("Sending: " + uri);
-            Log.d(WiFiDirectCopActivity.TAG, "Intent----------- " + uri);
 
+            Log.d(WiFiDirectCopActivity.TAG, "Intent----------- " + uri);
             Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
             serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
             serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
@@ -166,7 +167,12 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
             serviceIntent.putExtra(FileTransferService.EXTRA_FILE_NAME, filename);
             serviceIntent.putExtra(FileTransferService.EXTRA_DEVICE_NAME, deviceName);
 
+            if(requestCode == CHOOSE_FILE_RESULT_ExternalFile_CODE){
+                serviceIntent.putExtra(FileTransferService.EXTRA_FILE_STOAGEORIGIN, "external");
+            }
+
             if(requestCode == CHOOSE_FILE_RESULT_InternalFile_CODE){
+                serviceIntent.putExtra(FileTransferService.EXTRA_FILE_STOAGEORIGIN, "internal");
                 String fileOriginName = data.getStringExtra("fileOriginName");
                 serviceIntent.putExtra(FileTransferService.EXTRA_File_Origin_Name, fileOriginName);
             }
