@@ -181,7 +181,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
         }
 
-
     }
 
     public String getFileName(Uri uri) {

@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Environment;
 import android.util.Log;
 
@@ -72,7 +73,7 @@ public class FileTransferService extends IntentService {
             int port = intent.getExtras().getInt(EXTRAS_GROUP_OWNER_PORT);
             String fileOrigin = intent.getStringExtra(EXTRA_FILE_STOAGEORIGIN);
             String fileOriginName = this.EXTRA_File_Origin_Name;
-            if(fileOrigin == "internal"){
+            if(fileOrigin.equals("internal")){
                 fileOriginName = intent.getStringExtra(EXTRA_File_Origin_Name);
             }
             Socket socket = new Socket();
@@ -88,7 +89,6 @@ public class FileTransferService extends IntentService {
                 DataOutputStream dos = new DataOutputStream(out);
                 dos.writeUTF(fileName);
 
-                //OutputStream stream = socket.getOutputStream();
                 ContentResolver cr = context.getContentResolver();
                 InputStream is = null;
                 try {
@@ -103,22 +103,23 @@ public class FileTransferService extends IntentService {
                     updateFileFragmentDataBase(fileOriginName, fileName);
                     //update Firebase
                     DBReceiverUpdate.update(deviceName, fileOriginName, fileName);
+                    deleteInternalFile(Uri.parse(fileUri));
+                }else{
+                    deleteExternalFile(fileName);
                 }
-                //
-                 //delte file from internal storage
-                deltefile(fileUri);
+
             } catch (IOException e) {
                 Log.e(WiFiDirectCopActivity.TAG, e.getMessage());
             } finally {
                 if (socket != null) {
-                    if (socket.isConnected()) {
-                        try {
-                            socket.close();
-                        } catch (IOException e) {
-                            // Give up
-                            e.printStackTrace();
-                        }
-                    }
+//                    if (socket.isConnected()) {
+//                        try {
+//                            socket.close();
+//                        } catch (IOException e) {
+//                            // Give up
+//                            e.printStackTrace();
+//                        }
+//                    }
 
                 }
 
@@ -133,11 +134,31 @@ public class FileTransferService extends IntentService {
     }
 
     // delete file after succefully transit
-    public void deltefile(String fileUri){
-        Uri myUri = Uri.parse(fileUri);
-        File toDelteFile = new File(myUri.getPath());
-        toDelteFile.delete();
+    public void deleteInternalFile (Uri fileUri){
+        //Uri myUri = Uri.parse(fileUri);
+        File toDelteFile = new File(fileUri.getPath());
+        if (toDelteFile.exists()) {
+            if (toDelteFile.delete()) {
+                Log.d(WiFiDirectCopActivity.TAG, "FILE DELETED");
+            } else {
+                Log.d(WiFiDirectCopActivity.TAG, "FILE DELETE FAIL");
+            }
+        }
 
+    }
+
+    public void deleteExternalFile (String fileName){
+
+        File decryptFolder = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS), "DataPuzzle");
+        final File toDelteFile = new File(decryptFolder,fileName);
+        if (toDelteFile.exists()) {
+            if (toDelteFile.delete()) {
+                Log.d(WiFiDirectCopActivity.TAG, "FILE DELETED");
+            } else {
+                Log.d(WiFiDirectCopActivity.TAG, "FILE DELETE FAIL");
+            }
+        }
     }
 
     public void updateFileFragmentDataBase(String fileOriginName, String fileFragmentName){
